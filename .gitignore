@@ -1,0 +1,133 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+.env/
+.envrc
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+*.pem
+
+# Distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+ruff_check_cache/
+.ruff_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pytype/
+pyrightconfig.json.local
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+profile_default/
+
+# IDEs
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json.example
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# --- AI / ML & data ---
+# Model checkpoints & exports
+*.pt
+*.pth
+*.onnx
+*.pb
+*.h5
+*.hdf5
+*.keras
+*.safetensors
+*.ckpt
+*.pkl
+*.joblib
+*.npy
+*.npz
+*.pth.tar
+
+# Large or local datasets (tune: uncomment or narrow paths)
+# data/
+# datasets/
+
+# ML experiment tracking
+wandb/
+mlruns/
+neptune/
+tensorboard/
+runs/
+lightning_logs/
+.dvc/cache
+
+# Vector DB / RAG local stores
+chroma/
+.chroma/
+*.lance
+*.lancedb
+faiss_index*/
+
+# Hugging Face & similar caches
+.cache/
+huggingface/
+transformers_cache/
+
+# LangChain / agent caches (if used)
+.langchain/
+.langgraph/
+
+# LLM API keys in local config (keep examples tracked)
+# config.local.yaml
+
+# Top-level log directory only (not data/logs/)
+/logs/
+*.log
+
+# Local / generated (do not commit)
+output/
+outputs/
+
+# Observability / monitoring
+observability_logs/
