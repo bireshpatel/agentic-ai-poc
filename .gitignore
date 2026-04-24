@@ -123,7 +123,9 @@ transformers_cache/
 
 # Top-level log directory only (not data/logs/)
 /logs/
+# Ignore local log files; allow bundled anonymized sample(s) for quickstart
 *.log
+!data/logs/sample_*.log
 
 # Local / generated (do not commit)
 output/
