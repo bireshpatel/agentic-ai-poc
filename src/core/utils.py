@@ -63,7 +63,7 @@ def parse_json_safely(
         data = json.loads(text)
         if isinstance(data, list):
             return data
-    except:
+    except (json.JSONDecodeError, TypeError, ValueError):
         pass
 
     cleaned = text.strip()
@@ -88,7 +88,10 @@ def select_log_file(file_path: str=None, log_dir: str="data/logs") -> Path:
         return path
     log_files = sorted(Path(log_dir).glob("*.log"))
     if not log_files:
-        raise FileNotFoundError(f"Specified file {file_path} does not exist.")
+        base = Path(log_dir).resolve()
+        raise FileNotFoundError(
+            f"No .log files in {base}. Add logs under {base} or pass a file path."
+        )
     return log_files[0]
 
 def print_summary(duration: float, metadata: dict, llm_calls: int = 1, status: str = "Success"):
@@ -98,8 +101,11 @@ def print_summary(duration: float, metadata: dict, llm_calls: int = 1, status: s
     print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
     print(f"⏱️ Duration:       {duration:.2f}s")
     print(f"🤖 LLM Calls:      {llm_calls}")
-    print(f"📝 Total Tokens:   {metadata['total_tokens']}")
-    print(f"💰 Cost:           ${metadata['cost_usd']:.6f}")
-    print(f"🔧 Provider:       {metadata['provider']}/{metadata['model']}")
+    print(f"📝 Total Tokens:   {metadata.get('total_tokens', 0)}")
+    print(f"💰 Cost:           ${metadata.get('cost_usd', 0.0):.6f}")
+    print(
+        f"🔧 Provider:       {metadata.get('provider', 'N/A')}/"
+        f"{metadata.get('model', 'N/A')}"
+    )
     print(f"✅ Status:         {status}")
     print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")

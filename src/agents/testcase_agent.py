@@ -62,7 +62,7 @@ def save_as_csv(test_cases: List[Dict], csv_file: Path):
             "Priority": priority
         })
 
-        pd.DataFrame(rows).to_csv(csv_file, index=False, encoding="utf-8")
+    pd.DataFrame(rows).to_csv(csv_file, index=False, encoding="utf-8")
 
 
 

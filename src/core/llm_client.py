@@ -13,8 +13,9 @@ load_dotenv()
 PROVIDER = os.getenv("PROVIDER", "openai")
 MODEL = os.getenv("MODEL", "gpt-4o-mini")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-OLLAMA_HOST = os.getenv("OLLAMA_HOST","http://localhost:8080")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "")
+# Ollama’s default API port is 11434, not 8080
+OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://127.0.0.1:11434")
 TIMEOUT = int(os.getenv("TIMEOUT", 60))
 # Local Ollama can spend minutes on first load or long generations; 60s often hits httpx.ReadTimeout
 OLLAMA_READ_TIMEOUT = float(os.getenv("OLLAMA_READ_TIMEOUT", "600"))
@@ -109,8 +110,7 @@ def _call_openai(messages: List[Message]) -> str:
 def _call_gemini(messages: List[Message]) -> str:
     if not GOOGLE_API_KEY:
         raise ValueError(
-            "Google API key is missing. Set GOOGLE_API_KEY in .env (or fix legacy "
-            "GOOGLE_API_KEY vs GOOLE_API_KEY)."
+            "Google API key is missing. Set GOOGLE_API_KEY in .env."
         )
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent"
     headers = {
