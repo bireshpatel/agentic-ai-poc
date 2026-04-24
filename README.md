@@ -51,7 +51,3 @@ Generated artifacts go under `output/` (gitignored).
 - `data/logs/` — put your own `.log` files here for analysis (not tracked).
 - `src/core/` — LLM client, utilities, logging, cost helper.
 - `src/agents/` — CLI entrypoints for test-case and log analysis agents.
-
-## License
-
-Add a `LICENSE` file of your choice before publishing if you need explicit terms.
