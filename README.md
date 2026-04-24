@@ -4,7 +4,7 @@ Small Python PoC for **LLM-backed agents**: generate test cases from requirement
 
 ## Example outputs (what you get)
 
-Wording varies by **model and run**; the **shape** below matches what the agents are built to produce.
+The examples below are actual output from GPT-4o-mini on the bundled sample files. Your results will look similar but not identical — different models produce different wording.
 
 ### Requirements → test cases
 
@@ -141,6 +141,7 @@ Generated artifacts go under `output/` (gitignored). The **sample** log is track
 - `data/logs/` — includes a **demo** `sample_*.log` (tracked). Your own `*.log` files stay local (gitignored).
 - `src/core/` — LLM client, utilities, logging, cost helper.
 - `src/agents/` — CLI entrypoints for test-case and log analysis agents.
+- `output/` — generated on each run (gitignored). The log analyzer writes three files per run: a full technical report (`_analysis.txt`), a structured JSON summary (`_analysis.json`) for tools or pipelines, and a short plain-English paragraph (`_executive.txt`) written for anyone who doesn't read logs.
 
 ## Contributing
 
