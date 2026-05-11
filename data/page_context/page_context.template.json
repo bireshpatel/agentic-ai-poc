@@ -1,0 +1,14 @@
+{
+  "page": "YourFeaturePage",
+  "description": "One-line description of this screen for prompts and docs.",
+  "url_path": "/your/app/path",
+  "selectors": {
+    "exampleButton": "",
+    "exampleInput": ""
+  },
+  "actions": {
+    "exampleButton": "click",
+    "exampleInput": "fill"
+  },
+  "notes": "Empty selector strings become [data-testid=\"TODO:<key>\"] in generated TypeScript — grep TODO: to fill them."
+}
