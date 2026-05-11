@@ -19,6 +19,18 @@ OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://127.0.0.1:11434")
 TIMEOUT = int(os.getenv("TIMEOUT", 60))
 # Local Ollama can spend minutes on first load or long generations; 60s often hits httpx.ReadTimeout
 OLLAMA_READ_TIMEOUT = float(os.getenv("OLLAMA_READ_TIMEOUT", "600"))
+# OpenAI / Google: codegen and large completions often exceed TIMEOUT (default 60s) → httpx.ReadTimeout
+LLM_READ_TIMEOUT = float(os.getenv("LLM_READ_TIMEOUT", "300"))
+
+
+def _cloud_http_timeout() -> httpx.Timeout:
+    """Separate read budget for cloud APIs (connect/write stay bounded)."""
+    return httpx.Timeout(
+        connect=30.0,
+        read=LLM_READ_TIMEOUT,
+        write=120.0,
+        pool=5.0,
+    )
 
 Message = Dict[str, str]
 
@@ -104,7 +116,7 @@ def _call_openai(messages: List[Message]) -> str:
         "messages": messages,
         "temperature": 0,
     }
-    data = _http_post(url, headers, payload)
+    data = _http_post(url, headers, payload, timeout=_cloud_http_timeout())
     return data["choices"][0]["message"]["content"]
 
 def _call_gemini(messages: List[Message]) -> str:
@@ -148,7 +160,7 @@ def _call_gemini(messages: List[Message]) -> str:
         "generationConfig": {"temperature":  0  }
     }
 
-    data = _http_post(url, headers, payload)
+    data = _http_post(url, headers, payload, timeout=_cloud_http_timeout())
     return data["candidates"][0]["content"]["parts"][0]["text"]
 
 def _call_ollama(messages: List[Message]) -> str:

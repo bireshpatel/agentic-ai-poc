@@ -63,7 +63,7 @@ profile_default/
 .idea/
 .vscode/*
 !.vscode/extensions.json
-!.vscode/settings.json.example
+!.vscode/settings.json
 *.swp
 *.swo
 *~
@@ -130,6 +130,19 @@ transformers_cache/
 # Local / generated (do not commit)
 output/
 outputs/
+
+# Playwright / BDD scaffold under playwright-project/
+playwright-project/node_modules/
+playwright-project/allure-results/
+playwright-project/allure-report/
+playwright-project/smart-reporter-output/
+playwright-project/.features-gen/
+playwright-project/test-results/
+playwright-project/playwright-report/
+playwright-project/playwright/.cache/
+playwright-project/cucumber-report.json
+playwright-project/smart-report.html
+playwright-project/test-history.json
 
 # Observability / monitoring
 observability_logs/

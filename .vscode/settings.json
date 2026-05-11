@@ -1,0 +1,7 @@
+{
+"cucumber.features": ["**/playwright-project/features/**/*.feature"],
+"cucumber.glue": [
+  "**/playwright-project/steps/**/*.ts",
+  "**/playwright-project/fixtures/**/*.ts"
+]
+}
