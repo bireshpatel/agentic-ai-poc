@@ -116,7 +116,48 @@ Test-case generation on sample requirements:
 python -m src.agents.testcase_agent data/requirements/payment_checkout.md
 ```
 
-## Usage
+## Python Agents + Playwright BDD Integration
+
+This project combines two automation pipelines:
+
+### 🤖 Python Agents (AI-Driven)
+- **Test Case Generation:** Converts requirements into structured test cases (CSV)
+- **Log Analysis:** Analyzes logs and generates insights with actionable recommendations
+
+**Outputs:** All artifacts go to `output/` (gitignored)
+
+### 🎭 Playwright BDD (Execution)
+- Located in `playwright-project/`
+- Executes automated tests against web applications
+- Uses generated test cases as reference for BDD scenarios
+
+### 🔗 Integration Workflow
+**⚠️ Manual Review Required:** Python agents generate test case _metadata_. A QA Engineer must:
+
+1. Review AI-generated test cases in `output/testcase_generated/*.csv`
+2. Map each CSV row to a BDD scenario in `playwright-project/features/*.feature`
+3. Implement step definitions in `playwright-project/steps/`
+4. Keep CSV and .feature files in sync via @TC-XXX tags
+
+**For details, see [INTEGRATION_GUIDE.md](INTEGRATION_GUIDE.md)** ← Start here for full workflow.
+
+### Quick Playwright Setup & Run
+
+```bash
+cd playwright-project
+npm install
+
+# Run tests (requires .env with PW_BASE_URL, PW_TEST_EMAIL, PW_TEST_PASSWORD)
+npm run test          # All tests
+npm run test:smoke    # Smoke tests only
+npm run test:regression  # Regression suite
+
+# View results
+npm run allure:generate
+npm run allure:open
+```
+
+---
 
 From the project root:
 

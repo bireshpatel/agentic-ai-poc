@@ -22,6 +22,18 @@ REQ_DIR = ROOT / "data" / "requirements"
 OUT_DIR = ROOT / "output" / "testcase_generated"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
+# TODO: Integration Point - Manual Review Required
+# Generated test cases are output to output/testcase_generated/{requirement}_testcases.csv
+# These test cases MUST be manually reviewed by a QA Engineer and either:
+# 1. Integrated into playwright-project/features/{requirement}.feature as BDD scenarios
+# 2. Used as reference for manual test case creation in Playwright
+# See INTEGRATION.md for detailed workflow (or create this documentation).
+# Suggested workflow:
+# - Review CSV test cases for accuracy and clarity
+# - Map test IDs to @TC-XXX tags in .feature files
+# - Implement corresponding step definitions in playwright-project/steps/
+# - Link back to original AI-generated cases for traceability
+
 SYSTEM_PROMPT = """You are a QA engineer. Generate test cases from requirements.
 
 Return ONLY a JSON array with this structure:

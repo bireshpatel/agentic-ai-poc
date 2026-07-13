@@ -14,6 +14,17 @@ LOG_DIR = ROOT / "data" / "logs"
 OUT_DIR = ROOT / "output" / "log_analyzer"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
+# TODO: Integration Point - Manual Review Required
+# Log analysis output is written to output/log_analyzer/ with three files:
+# 1. {log_file}_analysis.txt - Human-readable technical analysis
+# 2. {log_file}_analysis.json - Structured data (errors, severity, affected systems)
+# 3. {log_file}_executive.txt - Executive summary for stakeholders
+# These outputs should be manually reviewed by DevOps/QA Engineers to:
+# - Validate AI-generated insights against actual logs
+# - Prioritize critical errors for fixing
+# - Create corresponding test cases in Playwright to prevent regressions
+# See INTEGRATION.md for log analysis → test case mapping workflow.
+
 # Prompt
 SYSTEM_PROMPT = """You are a senior DevOps engineer analyzing system logs.
 

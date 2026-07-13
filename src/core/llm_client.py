@@ -47,7 +47,7 @@ def chat(messages: List[Message]) -> Dict:
     if p == "openai":
         response = _call_openai(messages)
     elif p == "google":
-        response = _call_gemini(messages)  # Placeholder for Google implementation
+        response = _call_gemini(messages)
     elif p == "ollama":
         response = _call_ollama(messages)
     else:
