@@ -1,0 +1,23 @@
+{
+  "page": "PaymentCheckout",
+  "description": "The final step of the checkout flow where the user enters payment details.",
+  "url_path": "/checkout/payment",
+  "selectors": {
+    "cardNumber": "[data-testid='card-number-input']",
+    "cardExpiry": "[data-testid='card-expiry-input']",
+    "cardCvc": "[data-testid='card-cvc-input']",
+    "submitButton": "[data-testid='pay-now-btn']",
+    "successMessage": ".order-confirmation-banner",
+    "errorMessage": "[data-testid='payment-error-msg']",
+    "loadingSpinner": "[data-testid='payment-loading']"
+  },
+  "actions": {
+    "fillCardNumber": "fill",
+    "fillCardExpiry": "fill",
+    "fillCardCvc": "fill",
+    "clickSubmit": "click",
+    "assertSuccess": "toBeVisible",
+    "assertError": "toBeVisible"
+  },
+  "notes": "Card number field auto-formats with spaces. Use raw 16-digit string."
+}
