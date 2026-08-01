@@ -89,6 +89,13 @@ cp .env.example .env
 
 Without `uv`, you can use a venv and `pip install -e .` from the same directory.
 
+### Running tests
+
+```bash
+uv sync --group dev
+uv run pytest
+```
+
 ## Configuration
 
 | Variable | Purpose |
@@ -99,6 +106,12 @@ Without `uv`, you can use a venv and `pip install -e .` from the same directory.
 | `GOOGLE_API_KEY` | If using Google Gemini |
 | `OLLAMA_HOST` | If using Ollama (e.g. `http://localhost:11434`) |
 | `OLLAMA_READ_TIMEOUT` | Long read timeout for local models (seconds) |
+| `LLM_MAX_ATTEMPTS` | Retry attempts for transient network errors / 429 / 5xx (default `3`) |
+
+Token counts and cost come from the provider's own `usage` block when the API returns
+one (OpenAI, Gemini, and Ollama all do); if a response has no usage data, the summary
+falls back to a rough character-based estimate and labels it accordingly
+(`Total Tokens: N (api)` vs `(estimated)`).
 
 ## Try it in ~5 minutes
 

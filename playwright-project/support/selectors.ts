@@ -61,7 +61,7 @@ export const Selectors = {
 
   confirmation: {
     downloadInvoice: 'a[href*="download_invoice"]',
-    orderPlacedHeading: 'Order Placed!',
+    orderPlacedHeading: '[data-qa="order-placed"]',
   },
 
   modal: {
