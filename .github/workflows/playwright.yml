@@ -48,6 +48,8 @@ jobs:
         env:
           CI: true
           PW_BASE_URL: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.pw_base_url || (secrets.PW_BASE_URL != '' && secrets.PW_BASE_URL || 'https://automationexercise.com') }}
+          PW_TEST_EMAIL: ${{ secrets.PW_TEST_EMAIL }}
+          PW_TEST_PASSWORD: ${{ secrets.PW_TEST_PASSWORD }}
 
       - name: Upload test results (screenshots, traces)
         if: failure()
