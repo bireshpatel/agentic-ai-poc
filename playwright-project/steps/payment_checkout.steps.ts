@@ -16,6 +16,7 @@ import {
   aeProceedToCheckoutFromCart,
   aeReachPaymentPageFromCart,
   aeSignupInitial,
+  assertNotBotChallenge,
 } from '../helpers/automationExercise';
 
 // ─── World augmentation ────────────────────────────────────────────────────────
@@ -186,6 +187,7 @@ Then('the cart should be empty', async function (this: StepWorld) {
 Given('I have a product in my cart', async function (this: StepWorld) {
   await this.page.goto('/products');
   await this.page.waitForLoadState('domcontentloaded');
+  await assertNotBotChallenge(this.page);
   await this.page.locator(Selectors.addToCartById('1')).first().click();
   await aeOpenCartFromModal(this.page);
 });
@@ -203,6 +205,7 @@ Then('the checkout button should not be visible', async function (this: StepWorl
 
 When('I navigate directly to the payment page', async function (this: StepWorld) {
   await this.page.goto('/payment');
+  await assertNotBotChallenge(this.page);
 });
 
 When('I attempt to pay with test card details', async function (this: StepWorld) {
@@ -241,6 +244,7 @@ Given(
     this.registeredFirstName = 'Address';
     this.registeredLastName = 'User';
     await this.page.goto('/login');
+    await assertNotBotChallenge(this.page);
     const email = `addr${Date.now()}@example.com`;
     await aeSignupInitial(this.page, `${this.registeredFirstName} ${this.registeredLastName}`, email);
     await aeFillAccountInformation(this.page, {
