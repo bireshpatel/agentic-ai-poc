@@ -83,7 +83,7 @@ or extend fallback monitoring for catalog search.
 Requires **Python 3.9+**. This repo uses **[uv](https://github.com/astral-sh/uv)** for dependencies.
 
 ```bash
-cd agentic-ai-poc
+cd llm-qa-toolkit
 uv sync
 cp .env.example .env
 # Edit .env: set PROVIDER (openai | google | ollama) and the matching API key / Ollama host.
@@ -176,9 +176,9 @@ npm run allure:open
 
 Every push to `main` publishes the latest Playwright and Allure reports to GitHub Pages — no need to download and unzip CI artifacts:
 
-- **[Reports index](https://bireshpatel.github.io/agentic-ai-poc/)**
-- **[Playwright HTML Report](https://bireshpatel.github.io/agentic-ai-poc/playwright-report/)** — pass/fail results, screenshots, videos, traces
-- **[Allure Report](https://bireshpatel.github.io/agentic-ai-poc/allure-report/)** — suite breakdown and history
+- **[Reports index](https://bireshpatel.github.io/llm-qa-toolkit/)**
+- **[Playwright HTML Report](https://bireshpatel.github.io/llm-qa-toolkit/playwright-report/)** — pass/fail results, screenshots, videos, traces
+- **[Allure Report](https://bireshpatel.github.io/llm-qa-toolkit/allure-report/)** — suite breakdown and history
 
 Reports are also published for manual `workflow_dispatch` runs. See [.github/workflows/playwright.yml](.github/workflows/playwright.yml).
 
