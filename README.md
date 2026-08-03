@@ -1,6 +1,8 @@
-# agentic-ai-poc
+# llm-qa-toolkit
 
-Small Python PoC for **LLM-backed agents**: generate test cases from requirement markdown, analyze logs, and track rough token/cost estimates (where supported).
+A small Python toolkit that uses LLMs at specific points in a QA pipeline: draft test cases from requirement markdown, triage application logs, and scaffold Playwright-BDD tests — with a **mandatory human-review gate** before any AI output becomes an executable test. Token and cost usage are tracked per call (from the provider's own usage block where available, a labeled estimate otherwise).
+
+> **A note on "agents."** These are deliberate, single-shot LLM calls at fixed points in a pipeline, not autonomous agents — there is no planning, tool use, or adaptive loop. The engineering that matters here is the discipline around the calls: provider abstraction, retry handling, cost tracking, and a human reviewing every output before it reaches a test. That framing is intentional.
 
 ## Example outputs (what you get)
 
@@ -126,7 +128,7 @@ python -m src.agents.log_analyzer data/logs/sample_ecommerce.log
 Test-case generation on sample requirements:
 
 ```bash
-python -m src.agents.testcase_agent data/requirements/payment_checkout.md
+python -m src.agents.testcase_generator data/requirements/payment_checkout.md
 ```
 
 ## Python Agents + Playwright BDD Integration
@@ -186,10 +188,10 @@ From the project root:
 
 ```bash
 # All requirement .md files in data/requirements/
-python -m src.agents.testcase_agent
+python -m src.agents.testcase_generator
 
 # Single file
-python -m src.agents.testcase_agent data/requirements/payment_checkout.md
+python -m src.agents.testcase_generator data/requirements/payment_checkout.md
 ```
 
 ```bash

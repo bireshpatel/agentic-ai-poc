@@ -8,7 +8,7 @@ One JSON file per page under test. Naming convention:
 |----------------|-------------------|
 | `payment_checkout` | `payment_checkout_page.json` |
 
-The `playwright_generator_agent` resolves paths from the repo root and auto-loads `data/page_context/<stem>_page.json` when the testcase stem matches (`*_testcases.json` or `*_raw_output.json` from `output/testcase_generated/`). Override with `--page-context`.
+The `playwright_generator` resolves paths from the repo root and auto-loads `data/page_context/<stem>_page.json` when the testcase stem matches (`*_testcases.json` or `*_raw_output.json` from `output/testcase_generated/`). Override with `--page-context`.
 
 ## Schema
 

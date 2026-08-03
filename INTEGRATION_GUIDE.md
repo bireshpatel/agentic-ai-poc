@@ -14,7 +14,7 @@ This document describes how these pipelines work together and the manual review 
 
 ### 1. Test Case Generation (`output/testcase_generated/`)
 
-**Source:** `src/agents/testcase_agent.py`  
+**Source:** `src/agents/testcase_generator.py`  
 **Input:** Requirement markdown files from `data/requirements/`  
 **Output:**
 - `{requirement}_testcases.csv` - Test case table (TestID, Title, Steps, Expected, Priority)
@@ -25,7 +25,7 @@ This document describes how these pipelines work together and the manual review 
 
 1. **Generate:** Run the test case agent
    ```bash
-   uv run python -m src.agents.testcase_agent
+   uv run python -m src.agents.testcase_generator
    ```
 
 2. **Review:** Open the CSV file and manually verify:
@@ -114,9 +114,9 @@ cp .env.example .env
 ### Run Test Case Agent
 
 ```bash
-uv run python -m src.agents.testcase_agent [requirement_file]
+uv run python -m src.agents.testcase_generator [requirement_file]
 # or
-uv run python -m src.agents.testcase_agent
+uv run python -m src.agents.testcase_generator
 # (interactive menu)
 ```
 
