@@ -66,3 +66,57 @@ jobs:
           name: allure-results
           path: playwright-project/allure-results
           retention-days: 7
+
+      # Published to GitHub Pages by the deploy-pages job below (push to main/master only).
+      - name: Generate Allure report
+        if: ${{ always() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+        run: npx allure generate allure-results --clean -o allure-report
+
+      - name: Assemble Pages site
+        if: ${{ always() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+        run: |
+          mkdir -p _site
+          cp -r playwright-report _site/playwright-report
+          cp -r allure-report _site/allure-report
+          cat > _site/index.html <<EOF
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8" />
+            <title>Playwright Test Reports</title>
+            <style>
+              body { font-family: system-ui, sans-serif; max-width: 640px; margin: 3rem auto; padding: 0 1rem; }
+              li { margin: 0.5rem 0; }
+            </style>
+          </head>
+          <body>
+            <h1>Test Reports</h1>
+            <p>Latest run on <code>${GITHUB_REF_NAME}</code> — commit <code>${GITHUB_SHA:0:7}</code></p>
+            <ul>
+              <li><a href="./playwright-report/">Playwright HTML Report</a> (results, screenshots, traces)</li>
+              <li><a href="./allure-report/">Allure Report</a> (suite breakdown, history, trends)</li>
+            </ul>
+          </body>
+          </html>
+          EOF
+
+      - name: Upload Pages artifact
+        if: ${{ always() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: playwright-project/_site
+
+  deploy-pages:
+    needs: test
+    if: ${{ !cancelled() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

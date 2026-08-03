@@ -170,6 +170,16 @@ npm run allure:generate
 npm run allure:open
 ```
 
+### 📊 Published Test Reports
+
+Every push to `main` publishes the latest Playwright and Allure reports to GitHub Pages — no need to download and unzip CI artifacts:
+
+- **[Reports index](https://bireshpatel.github.io/agentic-ai-poc/)**
+- **[Playwright HTML Report](https://bireshpatel.github.io/agentic-ai-poc/playwright-report/)** — pass/fail results, screenshots, videos, traces
+- **[Allure Report](https://bireshpatel.github.io/agentic-ai-poc/allure-report/)** — suite breakdown and history
+
+Reports are also published for manual `workflow_dispatch` runs. See [.github/workflows/playwright.yml](.github/workflows/playwright.yml).
+
 ---
 
 From the project root:

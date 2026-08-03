@@ -151,6 +151,8 @@ playwright-project/.features-gen/
 playwright-project/allure-results/
 playwright-project/allure-report/
 playwright-project/test-results/
+playwright-project/playwright-report/
+playwright-project/_site/
 playwright-project/node_modules/
 
 # Observability / monitoring
