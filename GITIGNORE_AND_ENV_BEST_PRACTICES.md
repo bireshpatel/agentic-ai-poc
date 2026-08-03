@@ -136,7 +136,7 @@ outputs/
 
 **Setup (first time):**
 ```bash
-cd agentic-ai-poc
+cd llm-qa-toolkit
 uv sync
 ```
 

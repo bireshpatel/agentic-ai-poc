@@ -17,7 +17,7 @@ resolution-markers = [
 ]
 
 [[package]]
-name = "agentic-ai-poc"
+name = "llm-qa-toolkit"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

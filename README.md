@@ -83,7 +83,7 @@ or extend fallback monitoring for catalog search.
 Requires **Python 3.9+**. This repo uses **[uv](https://github.com/astral-sh/uv)** for dependencies.
 
 ```bash
-cd agentic-ai-poc
+cd llm-qa-toolkit
 uv sync
 cp .env.example .env
 # Edit .env: set PROVIDER (openai | google | ollama) and the matching API key / Ollama host.
@@ -131,11 +131,11 @@ Test-case generation on sample requirements:
 python -m src.agents.testcase_generator data/requirements/payment_checkout.md
 ```
 
-## Python Agents + Playwright BDD Integration
+## Python Automation + Playwright BDD Integration
 
 This project combines two automation pipelines:
 
-### 🤖 Python Agents (AI-Driven)
+### 🧰 Python Automation (LLM-Driven)
 - **Test Case Generation:** Converts requirements into structured test cases (CSV)
 - **Log Analysis:** Analyzes logs and generates insights with actionable recommendations
 
@@ -147,7 +147,7 @@ This project combines two automation pipelines:
 - Uses generated test cases as reference for BDD scenarios
 
 ### 🔗 Integration Workflow
-**⚠️ Manual Review Required:** Python agents generate test case _metadata_. A QA Engineer must:
+**⚠️ Manual Review Required:** The Python scripts generate test case _metadata_. A QA Engineer must:
 
 1. Review AI-generated test cases in `output/testcase_generated/*.csv`
 2. Map each CSV row to a BDD scenario in `playwright-project/features/*.feature`
@@ -176,9 +176,9 @@ npm run allure:open
 
 Every push to `main` publishes the latest Playwright and Allure reports to GitHub Pages — no need to download and unzip CI artifacts:
 
-- **[Reports index](https://bireshpatel.github.io/agentic-ai-poc/)**
-- **[Playwright HTML Report](https://bireshpatel.github.io/agentic-ai-poc/playwright-report/)** — pass/fail results, screenshots, videos, traces
-- **[Allure Report](https://bireshpatel.github.io/agentic-ai-poc/allure-report/)** — suite breakdown and history
+- **[Reports index](https://bireshpatel.github.io/llm-qa-toolkit/)**
+- **[Playwright HTML Report](https://bireshpatel.github.io/llm-qa-toolkit/playwright-report/)** — pass/fail results, screenshots, videos, traces
+- **[Allure Report](https://bireshpatel.github.io/llm-qa-toolkit/allure-report/)** — suite breakdown and history
 
 Reports are also published for manual `workflow_dispatch` runs. See [.github/workflows/playwright.yml](.github/workflows/playwright.yml).
 
@@ -206,7 +206,7 @@ Generated artifacts go under `output/` (gitignored). The **sample** log is track
 - `data/requirements/` — example requirement documents (tracked).
 - `data/logs/` — includes a **demo** `sample_*.log` (tracked). Your own `*.log` files stay local (gitignored).
 - `src/core/` — LLM client, utilities, logging, cost helper.
-- `src/agents/` — CLI entrypoints for test-case and log analysis agents.
+- `src/agents/` — CLI entrypoints for test-case generation and log analysis.
 - `output/` — generated on each run (gitignored). The log analyzer writes three files per run: a full technical report (`_analysis.txt`), a structured JSON summary (`_analysis.json`) for tools or pipelines, and a short plain-English paragraph (`_executive.txt`) written for anyone who doesn't read logs.
 
 ## Contributing
