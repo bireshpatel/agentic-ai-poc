@@ -147,7 +147,7 @@ ls -la | grep venv
 
 **Run Python (uses .venv automatically):**
 ```bash
-uv run python -m src.agents.testcase_agent
+uv run python -m src.agents.testcase_generator
 uv run python script.py
 ```
 
@@ -161,7 +161,7 @@ uv add package_name
 ```bash
 source .venv/bin/activate
 # Now you're in the venv; use `python` directly
-python -m src.agents.testcase_agent
+python -m src.agents.testcase_generator
 
 # Deactivate
 deactivate
@@ -256,7 +256,7 @@ jobs:
       
       # Set secrets as env variables (NOT in .env file)
       - run: |
-          uv run python -m src.agents.testcase_agent
+          uv run python -m src.agents.testcase_generator
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}

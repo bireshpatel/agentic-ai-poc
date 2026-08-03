@@ -116,9 +116,9 @@ API Endpoint: GET https://automationexercise.com/api/getUserDetailByEmail
 ################################################################################
 
   AC 1
-  Given I have registered a new account with name "Biresh Test", email "biresh_test@poc.com", firstname "Biresh", lastname "Test", city "Carrollton", country "United States"
-  When  I call GET /api/getUserDetailByEmail?email=biresh_test@poc.com
-  Then  The response code is 200 and the JSON contains a user object with name "Biresh Test", email "biresh_test@poc.com", city "Carrollton", and country "United States"
+  Given I have registered a new account with name "Biresh Test", email "test.user@example.com", firstname "Biresh", lastname "Test", city "Carrollton", country "United States"
+  When  I call GET /api/getUserDetailByEmail?email=test.user@example.com
+  Then  The response code is 200 and the JSON contains a user object with name "Biresh Test", email "test.user@example.com", city "Carrollton", and country "United States"
 
   AC 2
   Given I call GET /api/getUserDetailByEmail with a valid registered email
@@ -159,12 +159,12 @@ API Endpoint: DELETE https://automationexercise.com/api/deleteAccount
   Then  The navigation bar no longer shows "Logged in as [username]" and instead shows "Signup / Login", confirming the session is cleared
 
   AC 3
-  Given A user account with email "biresh_test@poc.com" and password "Welcome@123" exists
-  When  I send DELETE /api/deleteAccount with parameters email="biresh_test@poc.com" and password="Welcome@123"
+  Given A user account with email "test.user@example.com" and password "Welcome@123" exists
+  When  I send DELETE /api/deleteAccount with parameters email="test.user@example.com" and password="Welcome@123"
   Then  The response code is 200 and the message is "Account deleted!" confirming API-level account deletion works
 
   AC 4
-  Given I deleted an account with email "biresh_test@poc.com" via the API
+  Given I deleted an account with email "test.user@example.com" via the API
   When  I immediately send POST /api/verifyLogin with the same credentials
   Then  The response code is 404 and the message is "User not found!" confirming the account is fully removed
 

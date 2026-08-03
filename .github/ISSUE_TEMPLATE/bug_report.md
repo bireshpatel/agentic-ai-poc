@@ -9,9 +9,9 @@ labels: bug
 A clear description of what went wrong.
 
 **Component**
-- [ ] Test case agent (`src/agents/testcase_agent.py`)
+- [ ] Test case agent (`src/agents/testcase_generator.py`)
 - [ ] Log analyzer agent (`src/agents/log_analyzer.py`)
-- [ ] Playwright generator agent (`src/agents/playwright_generator_agent.py`)
+- [ ] Playwright generator agent (`src/agents/playwright_generator.py`)
 - [ ] Playwright BDD suite (`playwright-project/`)
 - [ ] Other
 
