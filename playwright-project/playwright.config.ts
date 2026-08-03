@@ -52,6 +52,7 @@ export default defineConfig({
         maxHistoryRuns: 10,
       },
     ],
+    ['html', { outputFolder: 'playwright-report', open: 'never' }],
   ],
 
   projects: [

@@ -3,18 +3,19 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "test": "playwright test",
+    "test": "bddgen && playwright test",
     "test:smoke": "playwright test --grep @smoke",
     "test:regression": "playwright test --grep @regression",
     "test:high": "playwright test --grep @high",
     "bddgen": "bddgen",
-    "allure:generate": "allure generate allure-results -o allure-report --clean",
-    "allure:open": "allure open allure-report"
+    "allure:generate": "npx allure generate allure-results -o allure-report --clean",
+    "allure:open": "npx allure open allure-report"
   },
   "devDependencies": {
     "@playwright/test": "^1.59.1",
     "@swc/core": "*",
     "@types/node": "^22.0.0",
+    "allure-commandline": "^2.29.0",
     "allure-playwright": "^3.0.0",
     "dotenv": "^16.0.0",
     "playwright-bdd": "^8.5.0",

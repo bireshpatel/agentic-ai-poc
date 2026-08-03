@@ -101,7 +101,8 @@ def print_summary(duration: float, metadata: dict, llm_calls: int = 1, status: s
     print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
     print(f"⏱️ Duration:       {duration:.2f}s")
     print(f"🤖 LLM Calls:      {llm_calls}")
-    print(f"📝 Total Tokens:   {metadata.get('total_tokens', 0)}")
+    token_source = metadata.get("token_source", "estimated")
+    print(f"📝 Total Tokens:   {metadata.get('total_tokens', 0)} ({token_source})")
     print(f"💰 Cost:           ${metadata.get('cost_usd', 0.0):.6f}")
     print(
         f"🔧 Provider:       {metadata.get('provider', 'N/A')}/"

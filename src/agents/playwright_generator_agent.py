@@ -253,6 +253,7 @@ def _default_meta() -> Dict[str, Any]:
         "cost_usd": 0.0,
         "provider": "N/A",
         "model": "N/A",
+        "token_source": "n/a",
     }
 
 

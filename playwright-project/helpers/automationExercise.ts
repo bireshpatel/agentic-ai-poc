@@ -15,8 +15,26 @@ export function aeProductId(name: string): string {
   return id;
 }
 
+/**
+ * automationexercise.com occasionally serves a bot-verification interstitial
+ * ("Please wait while your request is being verified...") to cloud/datacenter
+ * IPs (e.g. GitHub Actions runners) instead of the real page. Detect it right
+ * after navigation so the test fails fast with a clear cause instead of a
+ * generic 30s locator timeout.
+ */
+export async function assertNotBotChallenge(page: Page): Promise<void> {
+  const bodyText = await page.locator('body').innerText().catch(() => '');
+  if (/please wait while your request is being verified/i.test(bodyText)) {
+    throw new Error(
+      'automationexercise.com served a bot-verification challenge instead of the real page — ' +
+        'the CI runner\'s IP was likely rate-limited/blocked by the site. This is not a test or app bug; re-run the workflow.',
+    );
+  }
+}
+
 export async function aeLogin(page: Page, email: string, password: string): Promise<void> {
   await page.goto('/login');
+  await assertNotBotChallenge(page);
   await page.locator(Selectors.auth.loginEmail).fill(email);
   await page.locator(Selectors.auth.loginPassword).fill(password);
   await page.locator(Selectors.auth.loginButton).click();
@@ -28,6 +46,7 @@ export async function aeAddProductFromListingToCart(page: Page, productName: str
   const id = aeProductId(productName);
   await page.goto('/products');
   await page.waitForLoadState('domcontentloaded');
+  await assertNotBotChallenge(page);
   await page.locator(Selectors.addToCartById(id)).first().click();
   await page.locator(Selectors.modal.cartModal).getByRole('link', { name: 'View Cart' }).click();
   await page.waitForURL((url) => new URL(url).pathname.replace(/\/$/, '').endsWith('/view_cart'));
@@ -35,6 +54,7 @@ export async function aeAddProductFromListingToCart(page: Page, productName: str
 
 export async function aeOpenCart(page: Page): Promise<void> {
   await page.goto('/view_cart');
+  await assertNotBotChallenge(page);
 }
 
 export async function aeProceedToCheckoutFromCart(page: Page): Promise<void> {
@@ -137,6 +157,7 @@ export async function aeAddProductFromProductDetails(
 ): Promise<void> {
   const id = aeProductId(productName);
   await page.goto(`/product_details/${id}`);
+  await assertNotBotChallenge(page);
   await page.locator('#quantity').fill(String(quantity));
   await page.locator('button.cart').click();
   await page.locator(Selectors.modal.cartModal).getByRole('button', { name: 'Continue Shopping' }).click();

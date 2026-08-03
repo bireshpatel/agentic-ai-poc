@@ -161,7 +161,8 @@ def main():
                 "total_tokens": 0,
                 "cost_usd": 0.0,
                 "provider": "N/A",
-                "model": "N/A"
+                "model": "N/A",
+                "token_source": "n/a",
             }
 
         print_summary(duration, metadata, llm_call_count, "Failed")

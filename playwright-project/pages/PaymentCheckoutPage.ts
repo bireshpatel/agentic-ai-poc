@@ -1,61 +1,89 @@
 /**
- * Page Object for https://automationexercise.com/payment
+ * UTC timestamp for file headers: 2026-07-31T04:26:14+00:00
+ * Test cases source file: output/testcase_generated/payment_checkout_raw_output.json
+ * Page context source file: data/page_context/payment_checkout_page.json
+ *
+ * Selectors verified against the live automationexercise.com payment page — the
+ * generated page context used data-testid placeholders that don't exist on the
+ * real site; see support/selectors.ts (data-qa) for the source of truth.
  */
+
 import { Page, Locator, expect } from '@playwright/test';
 import { Selectors } from '../support/selectors';
 
+/**
+ * The final step of the checkout flow where the user enters payment details.
+ */
 export class PaymentCheckoutPage {
-  public readonly page: Page;
-  public readonly nameOnCard: Locator;
-  public readonly cardNumber: Locator;
-  public readonly cardCvc: Locator;
-  public readonly expiryMonth: Locator;
-  public readonly expiryYear: Locator;
-  public readonly submitButton: Locator;
+  readonly nameOnCard: Locator;
+  readonly cardNumber: Locator;
+  readonly cardExpiryMonth: Locator;
+  readonly cardExpiryYear: Locator;
+  readonly cardCvc: Locator;
+  readonly submitButton: Locator;
+  readonly successMessage: Locator;
 
-  constructor(page: Page) {
-    this.page = page;
+  constructor(private readonly page: Page) {
     this.nameOnCard = page.locator(Selectors.payment.nameOnCard);
     this.cardNumber = page.locator(Selectors.payment.cardNumber);
+    this.cardExpiryMonth = page.locator(Selectors.payment.expiryMonth);
+    this.cardExpiryYear = page.locator(Selectors.payment.expiryYear);
     this.cardCvc = page.locator(Selectors.payment.cvc);
-    this.expiryMonth = page.locator(Selectors.payment.expiryMonth);
-    this.expiryYear = page.locator(Selectors.payment.expiryYear);
     this.submitButton = page.locator(Selectors.payment.payButton);
+    this.successMessage = page.locator(Selectors.confirmation.orderPlacedHeading);
   }
 
-  async navigate(): Promise<void> {
+  /**
+   * Navigates to the payment checkout page.
+   */
+  async navigate() {
     await this.page.goto('/payment');
   }
 
-  async fillNameOnCard(value: string): Promise<void> {
+  /**
+   * Fills the cardholder name field.
+   */
+  async fillNameOnCard(value: string) {
     await this.nameOnCard.fill(value);
   }
 
-  async fillCardNumber(value: string): Promise<void> {
+  /**
+   * Fills the card number field.
+   * @param value Raw 16-digit card number string.
+   */
+  async fillCardNumber(value: string) {
     await this.cardNumber.fill(value);
   }
 
-  async fillCardCvc(value: string): Promise<void> {
+  /**
+   * Fills the expiry month/year fields.
+   * @param value "MM/YYYY" (the site splits this into two separate inputs).
+   */
+  async fillCardExpiry(value: string) {
+    const [month, year] = value.split('/').map((s) => s.trim());
+    await this.cardExpiryMonth.fill(month);
+    await this.cardExpiryYear.fill(year);
+  }
+
+  /**
+   * Fills the card CVC field.
+   * @param value 3 or 4 digit security code.
+   */
+  async fillCardCvc(value: string) {
     await this.cardCvc.fill(value);
   }
 
-  /** Accepts "MM/YYYY" or "MM/YY". */
-  async fillCardExpiry(value: string): Promise<void> {
-    const [mm, yy] = value.split('/').map((s) => s.trim());
-    if (!mm || !yy) throw new Error(`Expected expiry in MM/YYYY format, got: "${value}"`);
-    const year = yy.length === 2 ? `20${yy}` : yy;
-    await this.expiryMonth.fill(mm);
-    await this.expiryYear.fill(year);
-  }
-
-  async clickSubmit(): Promise<void> {
+  /**
+   * Clicks the submit/pay button.
+   */
+  async clickSubmit() {
     await this.submitButton.click();
   }
 
-  /** Asserts the "Order Placed!" confirmation heading is visible. */
-  async assertSuccess(timeout = 25_000): Promise<void> {
-    await expect(
-      this.page.getByRole('heading', { name: Selectors.confirmation.orderPlacedHeading }),
-    ).toBeVisible({ timeout });
+  /**
+   * Asserts that the order-confirmation heading is visible.
+   */
+  async assertSuccess() {
+    await expect(this.successMessage).toBeVisible();
   }
 }

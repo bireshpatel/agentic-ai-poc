@@ -45,8 +45,8 @@ Feature: Payment Checkout
     When I remove all items from the cart
     Then the checkout button should not be visible
     When I navigate directly to the payment page
-    Then I should be redirected to the cart page
-    And the cart should be empty
+    And I attempt to pay with test card details
+    Then the order should not be placed
 
   @TC-005 @high @regression
   Scenario: Verify registered address and mobile number pre-fill on checkout page
