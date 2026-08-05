@@ -4,6 +4,21 @@ A small Python toolkit that uses LLMs at specific points in a QA pipeline: draft
 
 > **A note on "agents."** These are deliberate, single-shot LLM calls at fixed points in a pipeline, not autonomous agents — there is no planning, tool use, or adaptive loop. The engineering that matters here is the discipline around the calls: provider abstraction, retry handling, cost tracking, and a human reviewing every output before it reaches a test. That framing is intentional.
 
+## How it works
+
+QA engineers spend real hours turning requirement docs into test cases and reading through noisy
+application logs by hand. This toolkit uses an LLM to produce the **first draft** of that work —
+then refuses to let anything reach an executable Playwright test until a **QA engineer has
+reviewed and mapped it by hand**.
+
+![Pipeline diagram: requirements and logs feed a provider-agnostic LLM client, producing draft test cases, log analysis, and BDD scaffolding — all unreviewed until they pass a Human Review Gate, after which the Playwright BDD suite runs, reports, and publishes to GitHub Pages.](docs/architecture-diagram.svg)
+
+Left half (dashed, teal): a provider-agnostic LLM client drafts test cases, log analysis, and BDD
+scaffolding from requirement docs and log files — three fixed single-shot calls, not an autonomous
+agent. Right half (solid): nothing crosses the amber Human Review Gate un-mapped; only reviewed,
+hand-tagged scenarios (`@TC-XXX`) become part of the executable Playwright-BDD suite that runs,
+reports, and publishes to GitHub Pages.
+
 ## Example outputs (what you get)
 
 The examples below are actual output from GPT-4o-mini on the bundled sample files. Your results will look similar but not identical — different models produce different wording.
