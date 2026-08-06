@@ -1,0 +1,154 @@
+<svg viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="llm-qa-toolkit: requirement docs and logs feed a provider-agnostic LLM client, producing draft test cases, log analysis, and BDD scaffolding. All drafts are unreviewed and funnel into a Human Review Gate. Only after a human signs off do the executable Playwright-BDD suite and published reports follow. Tagline: not an autonomous agent, deliberate single-shot LLM calls, always human-reviewed.">
+  <defs>
+    <marker id="arrowTeal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#0f7a68"/>
+    </marker>
+    <marker id="arrowInk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#aab2bd"/>
+    </marker>
+    <marker id="arrowAmber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#b5690f"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="630" fill="#ffffff" stroke="#d7dce2" stroke-width="1"/>
+
+  <!-- ===== Header ===== -->
+  <g font-family="-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+    <text x="48" y="56" font-size="32" font-weight="800" fill="#161b22">llm-qa-toolkit</text>
+    <text x="48" y="86" font-size="15" font-family="Georgia, serif" fill="#5b6472">LLM-assisted QA — test cases, log triage &amp; BDD scaffolding, always human-reviewed</text>
+    <text x="1152" y="46" font-size="12" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#8992a0" text-anchor="end">github.com/bireshpatel/llm-qa-toolkit</text>
+  </g>
+  <line x1="48" y1="102" x2="1152" y2="102" stroke="#d7dce2"/>
+
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" fill="#161b22">
+
+    <!-- column headers -->
+    <g font-size="10.5" fill="#8992a0" letter-spacing="0.5">
+      <text x="115" y="132" text-anchor="middle">INPUTS</text>
+      <text x="315" y="132" text-anchor="middle">LLM CLIENT</text>
+      <text x="550" y="132" text-anchor="middle">AI DRAFTS · UNREVIEWED</text>
+      <text x="805" y="132" text-anchor="middle">HUMAN REVIEW GATE</text>
+      <text x="1055" y="132" text-anchor="middle">EXECUTABLE · TRUSTED</text>
+    </g>
+
+    <!-- ===== Inputs ===== -->
+    <g>
+      <rect x="40" y="170" width="150" height="90" rx="3" fill="#e4e8ec" stroke="#aab2bd"/>
+      <text x="54" y="192" font-size="9.5" fill="#8992a0">INPUT</text>
+      <text x="54" y="212" font-size="12.5" font-weight="700">requirements/*.md</text>
+      <text x="54" y="228" font-size="10.5" fill="#5b6472" font-family="Georgia, serif">user stories + ACs</text>
+    </g>
+    <g>
+      <rect x="40" y="290" width="150" height="90" rx="3" fill="#e4e8ec" stroke="#aab2bd"/>
+      <text x="54" y="312" font-size="9.5" fill="#8992a0">INPUT</text>
+      <text x="54" y="332" font-size="12.5" font-weight="700">logs/*.log</text>
+      <text x="54" y="348" font-size="10.5" fill="#5b6472" font-family="Georgia, serif">raw application logs</text>
+    </g>
+    <path d="M190,215 L220,215" stroke="#aab2bd" stroke-width="1.4" fill="none" marker-end="url(#arrowInk)"/>
+    <path d="M190,335 L220,335" stroke="#aab2bd" stroke-width="1.4" fill="none" marker-end="url(#arrowInk)"/>
+
+    <!-- ===== LLM Client ===== -->
+    <rect x="220" y="150" width="190" height="250" rx="3" fill="#ffffff" stroke="#aab2bd" stroke-width="1.4"/>
+    <text x="236" y="177" font-size="9.5" fill="#8992a0">CORE</text>
+    <text x="236" y="200" font-size="15" font-weight="700">LLM Client</text>
+    <text x="236" y="220" font-size="11.5" fill="#5b6472" font-family="Georgia, serif">provider-agnostic</text>
+    <line x1="236" y1="234" x2="394" y2="234" stroke="#ccd3db"/>
+    <text x="236" y="254" font-size="11" fill="#5b6472" font-family="Georgia, serif">OpenAI · Gemini · Ollama</text>
+    <text x="236" y="272" font-size="11" fill="#5b6472" font-family="Georgia, serif">swap via .env — no code change</text>
+    <text x="236" y="298" font-size="11" fill="#5b6472" font-family="Georgia, serif">retries 429 / 5xx only —</text>
+    <text x="236" y="314" font-size="11" fill="#5b6472" font-family="Georgia, serif">not a bad API key</text>
+    <text x="236" y="336" font-size="11" fill="#5b6472" font-family="Georgia, serif">cost logged every call</text>
+    <text x="236" y="352" font-size="10" fill="#8992a0">(api) vs (estimated), labeled</text>
+
+    <!-- fan: LLM client -> 3 drafts -->
+    <path d="M410,215 L440,185" stroke="#0f7a68" stroke-width="1.4" fill="none" marker-end="url(#arrowTeal)"/>
+    <path d="M410,275 L440,275" stroke="#0f7a68" stroke-width="1.4" fill="none" marker-end="url(#arrowTeal)"/>
+    <path d="M410,335 L440,365" stroke="#0f7a68" stroke-width="1.4" fill="none" marker-end="url(#arrowTeal)"/>
+
+    <!-- ===== Draft outputs (dashed teal = unreviewed) ===== -->
+    <g>
+      <rect x="440" y="150" width="220" height="70" rx="3" fill="#e3f1ee" stroke="#0f7a68" stroke-dasharray="5 3"/>
+      <text x="456" y="171" font-size="9.5" fill="#0f7a68">testcase_generator</text>
+      <text x="456" y="190" font-size="13" font-weight="700">Test Cases</text>
+      <text x="456" y="206" font-size="10.5" fill="#5b6472" font-family="Georgia, serif">draft CSV + JSON, from the ACs</text>
+    </g>
+    <g>
+      <rect x="440" y="240" width="220" height="70" rx="3" fill="#e3f1ee" stroke="#0f7a68" stroke-dasharray="5 3"/>
+      <text x="456" y="261" font-size="9.5" fill="#0f7a68">log_analyzer</text>
+      <text x="456" y="280" font-size="13" font-weight="700">Log Analysis</text>
+      <text x="456" y="296" font-size="10.5" fill="#5b6472" font-family="Georgia, serif">summary + severity + exec blurb</text>
+    </g>
+    <g>
+      <rect x="440" y="330" width="220" height="70" rx="3" fill="#e3f1ee" stroke="#0f7a68" stroke-dasharray="5 3"/>
+      <text x="456" y="351" font-size="9.5" fill="#0f7a68">playwright_generator</text>
+      <text x="456" y="370" font-size="13" font-weight="700">BDD Scaffolding</text>
+      <text x="456" y="386" font-size="10.5" fill="#5b6472" font-family="Georgia, serif">draft .feature + step stubs</text>
+    </g>
+
+    <!-- fan: 3 drafts -> gate -->
+    <path d="M660,185 L690,275" stroke="#b5690f" stroke-width="1.4" fill="none" marker-end="url(#arrowAmber)"/>
+    <path d="M660,275 L690,275" stroke="#b5690f" stroke-width="1.4" fill="none" marker-end="url(#arrowAmber)"/>
+    <path d="M660,365 L690,275" stroke="#b5690f" stroke-width="1.4" fill="none" marker-end="url(#arrowAmber)"/>
+
+    <!-- ===== Human Review Gate ===== -->
+    <rect x="690" y="150" width="230" height="250" rx="4" fill="#faead4" stroke="#b5690f" stroke-width="2.5"/>
+    <g stroke="#b5690f" stroke-width="2">
+      <line x1="718" y1="176" x2="718" y2="196"/>
+      <line x1="732" y1="176" x2="732" y2="196"/>
+      <line x1="746" y1="176" x2="746" y2="196"/>
+    </g>
+    <text x="898" y="192" font-size="10" fill="#b5690f" text-anchor="end">GATE</text>
+    <text x="718" y="224" font-size="19" font-weight="700" fill="#b5690f">Human Review</text>
+    <line x1="718" y1="236" x2="898" y2="236" stroke="#d99a4e"/>
+    <text x="718" y="258" font-size="11.5" fill="#5b6472" font-family="Georgia, serif">QA engineer reads every draft</text>
+    <text x="718" y="277" font-size="11" fill="#5b6472" font-family="Georgia, serif">maps rows → BDD scenarios</text>
+    <text x="718" y="293" font-size="11" fill="#5b6472" font-family="Georgia, serif">via <tspan font-family="ui-monospace, monospace">@TC-XXX</tspan> tags</text>
+    <text x="718" y="322" font-size="11" fill="#5b6472" font-family="Georgia, serif" font-style="italic">nothing below this line runs</text>
+    <text x="718" y="338" font-size="11" fill="#5b6472" font-family="Georgia, serif" font-style="italic">until a human signs off</text>
+
+    <!-- fan: gate -> executable / trusted -->
+    <path d="M920,275 L950,215" stroke="#aab2bd" stroke-width="1.4" fill="none" marker-end="url(#arrowInk)"/>
+    <path d="M920,275 L950,335" stroke="#aab2bd" stroke-width="1.4" fill="none" marker-end="url(#arrowInk)"/>
+
+    <!-- ===== Executable / trusted ===== -->
+    <g>
+      <rect x="950" y="170" width="210" height="90" rx="3" fill="#ffffff" stroke="#aab2bd" stroke-width="1.4"/>
+      <text x="964" y="192" font-size="9.5" fill="#8992a0">EXECUTE</text>
+      <text x="964" y="212" font-size="12.5" font-weight="700">Playwright-BDD Suite</text>
+      <text x="964" y="228" font-size="10.5" fill="#5b6472" font-family="Georgia, serif">npm run test / test:smoke</text>
+    </g>
+    <g>
+      <rect x="950" y="290" width="210" height="90" rx="3" fill="#ffffff" stroke="#aab2bd" stroke-width="1.4"/>
+      <text x="964" y="312" font-size="9.5" fill="#8992a0">PUBLISH</text>
+      <text x="964" y="332" font-size="12.5" font-weight="700">Reports + Pages</text>
+      <text x="964" y="348" font-size="10.5" fill="#5b6472" font-family="Georgia, serif">Allure + HTML, every push to main</text>
+    </g>
+
+  </g>
+
+  <!-- ===== Footer ===== -->
+  <line x1="48" y1="424" x2="1152" y2="424" stroke="#d7dce2"/>
+
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace">
+    <g font-size="11.5" fill="#5b6472">
+      <rect x="70" y="446" width="272" height="30" rx="15" fill="#f3f5f7" stroke="#d7dce2"/>
+      <text x="206" y="465" text-anchor="middle">Provider-agnostic</text>
+
+      <rect x="366" y="446" width="330" height="30" rx="15" fill="#f3f5f7" stroke="#d7dce2"/>
+      <text x="531" y="465" text-anchor="middle">Retry-aware, not retry-everything</text>
+
+      <rect x="720" y="446" width="410" height="30" rx="15" fill="#f3f5f7" stroke="#d7dce2"/>
+      <text x="925" y="465" text-anchor="middle">Cost labeled: (api) vs (estimated)</text>
+    </g>
+  </g>
+
+  <g font-family="Georgia, serif" text-anchor="middle">
+    <text x="600" y="528" font-size="23" font-style="italic" font-weight="700" fill="#161b22">"Not an autonomous agent."</text>
+    <text x="600" y="556" font-size="14" fill="#5b6472">Deliberate, single-shot LLM calls — always reviewed by a human before anything becomes a test.</text>
+  </g>
+
+  <text x="600" y="604" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#8992a0" text-anchor="middle">MIT licensed · github.com/bireshpatel/llm-qa-toolkit</text>
+
+</svg>
