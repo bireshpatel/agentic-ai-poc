@@ -93,6 +93,14 @@ or extend fallback monitoring for catalog search.
 
 **Plain-language executive blurb (→ `..._executive.txt`):** a short, non-technical paragraph after `---EXECUTIVE---` in the model output (e.g. impact to customers, what to fix first).
 
+All three files are written to `output/log_analyzer/`. For the full review → root-cause →
+regression-test workflow (not just generation), see the **Log Analysis** section of
+[INTEGRATION_GUIDE.md](INTEGRATION_GUIDE.md).
+
+> **Note on log size:** the whole file is sent to the LLM in a single call — there's no chunking
+> or truncation. For large production logs this affects both token cost and the provider's
+> context-window limit; trim or split large logs before analyzing them.
+
 ## Setup
 
 Requires **Python 3.9+**. This repo uses **[uv](https://github.com/astral-sh/uv)** for dependencies.
@@ -136,7 +144,8 @@ With `.env` configured (any provider you have: **Ollama** is enough), run the lo
 
 ```bash
 python -m src.agents.log_analyzer data/logs/sample_ecommerce.log
-# Or, if that is the only .log in data/logs/:
+# Or with no argument: picks the first *.log file alphabetically from data/logs/
+# (not necessarily the only one — pass a path explicitly if more than one log lives there)
 # python -m src.agents.log_analyzer
 ```
 
@@ -222,7 +231,9 @@ Generated artifacts go under `output/` (gitignored). The **sample** log is track
 - `data/logs/` — includes a **demo** `sample_*.log` (tracked). Your own `*.log` files stay local (gitignored).
 - `src/core/` — LLM client, utilities, logging, cost helper.
 - `src/agents/` — CLI entrypoints for test-case generation and log analysis.
-- `output/` — generated on each run (gitignored). The log analyzer writes three files per run: a full technical report (`_analysis.txt`), a structured JSON summary (`_analysis.json`) for tools or pipelines, and a short plain-English paragraph (`_executive.txt`) written for anyone who doesn't read logs.
+- `output/` — generated on each run (gitignored):
+  - `output/testcase_generated/` — CSV plus the raw JSON/txt response from the test-case agent.
+  - `output/log_analyzer/` — three files per run from the log analyzer: a full technical report (`_analysis.txt`), a structured JSON summary (`_analysis.json`) for tools or pipelines, and a short plain-English paragraph (`_executive.txt`) written for anyone who doesn't read logs.
 
 ## Contributing
 
