@@ -1,0 +1,50 @@
+<svg viewBox="0 0 920 440" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Comparison table: prompting an AI tool directly versus llm-qa-toolkit. One-off manual versus repeatable CLI command. No link back to the requirement versus traced via @TC-XXX tags. Cost is invisible versus cost logged per call, labeled api or estimated. Free-text output versus structured CSV and JSON. Copy-paste into a doc versus feeds directly into a Playwright-BDD scaffold.">
+
+  <rect x="0" y="0" width="920" height="440" fill="#ffffff" stroke="#d7dce2"/>
+
+  <text x="40" y="38" font-size="14" font-family="Georgia, serif" font-style="italic" fill="#5b6472">If you're wondering why this isn't just a ChatGPT conversation — that's the right question:</text>
+
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace">
+
+    <!-- header row -->
+    <rect x="40" y="60" width="840" height="46" fill="#eef1f4" stroke="#d7dce2"/>
+    <text x="60" y="88" font-size="13.5" font-weight="700" fill="#161b22">Prompting an AI tool directly</text>
+    <text x="480" y="88" font-size="13.5" font-weight="700" fill="#0f7a68">llm-qa-toolkit</text>
+    <line x1="460" y1="60" x2="460" y2="418" stroke="#d7dce2"/>
+
+    <!-- rows -->
+    <g font-size="13">
+      <rect x="40" y="106" width="840" height="52" fill="#ffffff"/>
+      <text x="60" y="138" fill="#5b6472">One-off, manual</text>
+      <text x="480" y="138" fill="#0f7a68" font-weight="600">Repeatable CLI command</text>
+
+      <rect x="40" y="158" width="840" height="52" fill="#f7f8f9"/>
+      <text x="60" y="190" fill="#5b6472">No link back to the requirement</text>
+      <text x="480" y="190" fill="#0f7a68" font-weight="600">Traced via @TC-XXX tags</text>
+
+      <rect x="40" y="210" width="840" height="52" fill="#ffffff"/>
+      <text x="60" y="242" fill="#5b6472">Cost is invisible</text>
+      <text x="480" y="242" fill="#0f7a68" font-weight="600">Logged per call — (api) vs (estimated)</text>
+
+      <rect x="40" y="262" width="840" height="52" fill="#f7f8f9"/>
+      <text x="60" y="294" fill="#5b6472">Free-text output</text>
+      <text x="480" y="294" fill="#0f7a68" font-weight="600">Structured CSV + JSON</text>
+
+      <rect x="40" y="314" width="840" height="52" fill="#ffffff"/>
+      <text x="60" y="346" fill="#5b6472">Copy-paste into a doc</text>
+      <text x="480" y="346" fill="#0f7a68" font-weight="600">Feeds into a Playwright-BDD scaffold</text>
+    </g>
+
+    <!-- outer + row divider lines -->
+    <g stroke="#e4e8ec">
+      <line x1="40" y1="158" x2="880" y2="158"/>
+      <line x1="40" y1="210" x2="880" y2="210"/>
+      <line x1="40" y1="262" x2="880" y2="262"/>
+      <line x1="40" y1="314" x2="880" y2="314"/>
+    </g>
+    <rect x="40" y="60" width="840" height="306" fill="none" stroke="#d7dce2"/>
+  </g>
+
+  <text x="460" y="428" font-size="11" font-family="ui-monospace, monospace" fill="#8992a0" text-anchor="middle">llm-qa-toolkit</text>
+</svg>

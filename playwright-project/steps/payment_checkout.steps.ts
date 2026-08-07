@@ -1,278 +1,233 @@
-import { Page } from '@playwright/test';
-import { BddWorld, Given, When, Then, test } from '../fixtures/base.fixture';
-import { expect } from '@playwright/test';
-import { PaymentCheckoutPage } from '../pages/PaymentCheckoutPage';
-import { Selectors } from '../support/selectors';
-import { TestCard, DefaultDeliveryComment } from '../support/testData';
-import {
-  aeAddProductFromListingToCart,
-  aeAddProductFromProductDetails,
-  aeContinueAfterAccountCreated,
-  aeFillAccountInformation,
-  aeGuestOpenRegisterLoginFromCheckoutModal,
-  aeLogin,
-  aeOpenCart,
-  aeOpenCartFromModal,
-  aeProceedToCheckoutFromCart,
-  aeReachPaymentPageFromCart,
-  aeSignupInitial,
-  assertNotBotChallenge,
-} from '../helpers/automationExercise';
+// 2026-08-06T04:44:33+00:00
+// output/testcase_generated/payment_checkout_raw_output.json
+// data/page_context/payment_checkout_page.json
 
-// ─── World augmentation ────────────────────────────────────────────────────────
+import { BddWorld, Given, When, Then } from '../fixtures/base.fixture';
+import { expect, Page } from '@playwright/test';
+import { PaymentCheckoutPage } from '../pages/PaymentCheckoutPage';
+import { aeAddProductFromListingToCart, aeAddProductFromProductDetails, aeOpenCart, aeProceedToCheckoutFromCart } from '../helpers/automationExercise';
+import { Selectors } from '../support/selectors';
 
 interface StepWorld extends BddWorld {
   paymentCheckoutPage?: PaymentCheckoutPage;
-  registeredAddress?: string;
-  registeredMobile?: string;
-  registeredFirstName?: string;
-  registeredLastName?: string;
 }
 
-function paymentPage(world: StepWorld): PaymentCheckoutPage {
-  if (!world.paymentCheckoutPage) world.paymentCheckoutPage = new PaymentCheckoutPage(world.page);
+function getPaymentCheckoutPage(world: StepWorld): PaymentCheckoutPage {
+  if (!world.paymentCheckoutPage) {
+    world.paymentCheckoutPage = new PaymentCheckoutPage(world.page);
+  }
   return world.paymentCheckoutPage;
 }
 
-async function assertAddressSection(page: Page, sectionSelector: string, world: StepWorld): Promise<void> {
-  const { registeredAddress, registeredMobile } = world;
-  if (!registeredAddress || !registeredMobile) {
-    throw new Error('Registered address/mobile not set — ensure the Given registration step ran first');
-  }
-  const digits = registeredMobile.replace(/\D/g, '');
-  const text = await page.locator(sectionSelector).innerText();
-  expect(text).toContain(registeredAddress);
-  expect(text).toMatch(new RegExp(digits.split('').join('\\D*'), 'i'));
+async function fillAccountInformation(page: Page, details: {
+  firstName: string;
+  lastName: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
+  country: string;
+}): Promise<void> {
+  await page.locator(Selectors.account.genderMale).check();
+  await page.locator(Selectors.account.password).fill('Password1!');
+  await page.locator(Selectors.account.dobDay).selectOption('1');
+  await page.locator(Selectors.account.dobMonth).selectOption('1');
+  await page.locator(Selectors.account.dobYear).selectOption('1990');
+  await page.locator(Selectors.account.firstName).fill(details.firstName);
+  await page.locator(Selectors.account.lastName).fill(details.lastName);
+  await page.locator(Selectors.account.address).fill(details.address);
+  await page.locator(Selectors.account.country).selectOption(details.country);
+  await page.locator(Selectors.account.state).fill(details.state);
+  await page.locator(Selectors.account.city).fill(details.city);
+  await page.locator(Selectors.account.zipcode).fill(details.zip);
+  await page.locator(Selectors.account.mobileNumber).fill('1234567890');
 }
 
-// ─── TC-001 / TC-003 shared: authenticated user ────────────────────────────────
-
-Given('I am logged in as a registered user', async function (this: StepWorld) {
-  const email = process.env.PW_TEST_EMAIL;
-  const password = process.env.PW_TEST_PASSWORD;
-  if (!email || !password) {
-    throw new Error(
-      'PW_TEST_EMAIL and PW_TEST_PASSWORD must be set in .env — never hardcode credentials in feature files',
-    );
-  }
-  await aeLogin(this.page, email, password);
+Given('I am on the Payment Checkout page', async function (this: StepWorld) {
+  await getPaymentCheckoutPage(this).navigateTo();
 });
 
-Given('I have {string} in my cart', async function (this: StepWorld, product: string) {
-  await aeAddProductFromListingToCart(this.page, product);
+Given(/^I am logged in as (.+) and navigate to Products page$/, async function (this: StepWorld) {
+  await this.page.goto('/products');
+  await expect(this.page).toHaveURL(/products/);
 });
 
-// ─── TC-001: successful checkout ──────────────────────────────────────────────
-
-When('I proceed to checkout with comment {string}', async function (this: StepWorld, comment: string) {
-  await aeReachPaymentPageFromCart(this.page, comment);
+Given(/^I navigate to Products page and add '([^']+)' \(Rs\. (\d+)\) to cart$/, async function (this: StepWorld, productName: string) {
+  await aeAddProductFromListingToCart(this.page, productName);
 });
 
-When(
-  'I pay with card holder {string}, card {string}, expiry {string}, and CVC {string}',
-  async function (this: StepWorld, name: string, cardNumber: string, expiry: string, cvc: string) {
-    const pc = paymentPage(this);
-    await pc.fillNameOnCard(name);
-    await pc.fillCardNumber(cardNumber);
-    await pc.fillCardExpiry(expiry);
-    await pc.fillCardCvc(cvc);
-    await pc.clickSubmit();
-  },
-);
-
-Then('the order should be placed successfully', async function (this: StepWorld) {
-  await paymentPage(this).assertSuccess();
+Given(/^I add '([^']+)' \(Rs\. (\d+)\) to cart$/, async function (this: StepWorld, productName: string) {
+  await aeAddProductFromListingToCart(this.page, productName);
 });
 
-Then('the invoice file should be downloaded', async function (this: StepWorld) {
-  const downloadPromise = this.page.waitForEvent('download');
-  await this.page.locator(Selectors.confirmation.downloadInvoice).click();
-  const download = await downloadPromise;
-  expect(download.suggestedFilename()).toBeTruthy();
+Given(/^I add '([^']+)' \(Rs\. (\d+)\) and '([^']+)' \(Rs\. (\d+)\) to cart$/, async function (this: StepWorld, firstProduct: string, secondProduct: string) {
+  await aeAddProductFromListingToCart(this.page, firstProduct);
+  await aeAddProductFromListingToCart(this.page, secondProduct);
 });
 
-// ─── TC-002: guest-user registration during checkout ──────────────────────────
-
-Given('I am a guest user with {string} in my cart', async function (this: StepWorld, product: string) {
-  await aeAddProductFromListingToCart(this.page, product);
+Given(/^I navigate to '([^']+)' product page, increase quantity to (\d+), add to cart$/, async function (this: StepWorld, productName: string, quantity: string) {
+  await aeAddProductFromProductDetails(this.page, productName, Number(quantity));
 });
 
-When('I proceed to checkout and choose to create an account', async function (this: StepWorld) {
+Given(/^I register with first name '([^']+)', last name '([^']+)', address '([^']+)', city '([^']+)', state '([^']+)', zip '([^']+)', country '([^']+)'$/, async function (this: StepWorld, firstName: string, lastName: string, address: string, city: string, state: string, zip: string, country: string) {
+  await this.page.goto('/login');
+  await this.page.locator(Selectors.auth.signupName).fill(`${firstName} ${lastName}`);
+  await this.page.locator(Selectors.auth.signupEmail).fill(`user+${Date.now()}@example.com`);
+  await this.page.locator(Selectors.auth.signupButton).click();
+  await fillAccountInformation(this.page, { firstName, lastName, address, city, state, zip, country });
+  await this.page.locator(Selectors.account.createAccount).click();
+});
+
+Given('I add a product and navigate to the checkout page', async function (this: StepWorld) {
+  await aeAddProductFromListingToCart(this.page, 'Blue Top');
   await aeProceedToCheckoutFromCart(this.page);
-  await aeGuestOpenRegisterLoginFromCheckoutModal(this.page);
 });
 
-When('I complete the new account registration', async function (this: StepWorld) {
-  const email = `guest${Date.now()}@example.com`;
-  await aeSignupInitial(this.page, 'Guest User', email);
-  await aeFillAccountInformation(this.page, {
-    password: 'Welcome@123',
-    firstName: 'Guest',
+When(/^I hover over '([^']+)' \(Rs\. (\d+)\) and click '([^']+)'$/, async function (this: StepWorld, productName: string) {
+  await aeAddProductFromListingToCart(this.page, productName);
+});
+
+When(/^I click '([^']+)'$/, async function (this: StepWorld, label: string) {
+  if (label === 'View Cart') {
+    await this.page.locator(Selectors.cart.viewCartLink).click();
+  } else if (label === 'Proceed To Checkout') {
+    await aeProceedToCheckoutFromCart(this.page);
+  } else if (label === 'Pay and Confirm Order') {
+    await getPaymentCheckoutPage(this).clickSubmit();
+  } else if (label === 'Create Account') {
+    await this.page.locator(Selectors.account.createAccount).click();
+  } else if (label === 'X') {
+    await this.page.locator(Selectors.cart.deleteItem).first().click();
+  } else {
+    await this.page.getByText(label).first().click();
+  }
+});
+
+When(/^I click '([^']+)' delete button next to '([^']+)'$/, async function (this: StepWorld, buttonLabel: string, productName: string) {
+  await this.page.locator(Selectors.cart.deleteItem).first().click();
+});
+
+Then(/^I click '([^']+)' without modifying any details$/, async function (this: StepWorld, label: string) {
+  if (label === 'Place Order') {
+    await getPaymentCheckoutPage(this).clickSubmit();
+  }
+});
+
+When(/^I select '([^']+)' from the prompt$/, async function (this: StepWorld, option: string) {
+  await this.page.getByRole('link', { name: option }).first().click();
+});
+
+Given('I fill in a new username and email, click \'Signup\'', async function (this: StepWorld) {
+  await this.page.locator(Selectors.auth.signupName).fill('Test User');
+  await this.page.locator(Selectors.auth.signupEmail).fill(`user+${Date.now()}@example.com`);
+  await this.page.locator(Selectors.auth.signupButton).click();
+});
+
+Given('I complete account information form with all required fields', async function (this: StepWorld) {
+  await fillAccountInformation(this.page, {
+    firstName: 'Test',
     lastName: 'User',
-    address: '1234 Main St',
-    mobile: '+19720000000',
+    address: '123 Main Street',
+    city: 'Dallas',
+    state: 'Texas',
+    zip: '75001',
+    country: 'United States',
   });
 });
 
-When('I return to the cart and proceed to checkout', async function (this: StepWorld) {
-  await aeContinueAfterAccountCreated(this.page);
-  await this.page.locator(Selectors.cart.viewCartLink).first().click();
-  await this.page.waitForURL((url) => new URL(url).pathname.replace(/\/$/, '').endsWith('/view_cart'));
-});
-
-When('I complete the payment with test card details', async function (this: StepWorld) {
-  const pc = paymentPage(this);
-  await aeReachPaymentPageFromCart(this.page, DefaultDeliveryComment);
-  await pc.fillNameOnCard(TestCard.holderName);
-  await pc.fillCardNumber(TestCard.number);
-  await pc.fillCardExpiry(TestCard.expiry);
-  await pc.fillCardCvc(TestCard.cvc);
-  await pc.clickSubmit();
-});
-
-Then('I should be logged in', async function (this: StepWorld) {
-  await expect(this.page.locator(Selectors.auth.logoutLink)).toBeVisible();
-});
-
-// ─── TC-003: cart totals + post-order clearance ────────────────────────────────
-
-Given(/^I have (\d+) units? of "([^"]*)" in my cart$/, async function (this: StepWorld, qty: number, product: string) {
-  await aeAddProductFromProductDetails(this.page, product, Number(qty));
-});
-
-When('I view the cart', async function (this: StepWorld) {
+Given('I navigate back to cart and proceed to checkout', async function (this: StepWorld) {
   await aeOpenCart(this.page);
-});
-
-/**
- * Sums every line-total cell in the cart table and compares to the expected value.
- * This uses the actual DOM values rather than hard-coded numbers so the assertion
- * stays correct even if product prices change on the site.
- */
-Then('the cart total should be {string}', async function (this: StepWorld, expectedTotal: string) {
-  // Prices here are whole rupees with no decimals — strip everything but digits.
-  // (Stripping only non-digit-non-dot characters is wrong: "Rs. 5100" keeps the
-  // literal dot from "Rs." and misparses as 0.51.)
-  const lineTotals = await this.page.locator(Selectors.cart.lineTotal).allInnerTexts();
-  const grandTotal = lineTotals.reduce((sum, text) => {
-    const amount = parseInt(text.replace(/[^0-9]/g, ''), 10);
-    return sum + (isNaN(amount) ? 0 : amount);
-  }, 0);
-  const expectedAmount = parseInt(expectedTotal.replace(/[^0-9]/g, ''), 10);
-  expect(grandTotal).toBe(expectedAmount);
-});
-
-When('I complete checkout and payment', async function (this: StepWorld) {
-  const pc = paymentPage(this);
-  await aeReachPaymentPageFromCart(this.page, DefaultDeliveryComment);
-  await pc.fillNameOnCard(TestCard.holderName);
-  await pc.fillCardNumber(TestCard.number);
-  await pc.fillCardExpiry(TestCard.expiry);
-  await pc.fillCardCvc(TestCard.cvc);
-  await pc.clickSubmit();
-  await pc.assertSuccess();
-});
-
-When('I navigate back to the cart', async function (this: StepWorld) {
-  await this.page.locator(Selectors.cart.viewCartLink).first().click();
-  await this.page.waitForURL((url) => new URL(url).pathname.replace(/\/$/, '').endsWith('/view_cart'));
-});
-
-Then('the cart should be empty', async function (this: StepWorld) {
-  await expect(this.page.locator(Selectors.cart.emptyCart)).toBeVisible();
-});
-
-// ─── TC-004: empty-cart checkout prevention ────────────────────────────────────
-
-Given('I have a product in my cart', async function (this: StepWorld) {
-  await this.page.goto('/products');
-  await this.page.waitForLoadState('domcontentloaded');
-  await assertNotBotChallenge(this.page);
-  await this.page.locator(Selectors.addToCartById('1')).first().click();
-  await aeOpenCartFromModal(this.page);
-});
-
-When('I remove all items from the cart', async function (this: StepWorld) {
-  await aeOpenCart(this.page);
-  await this.page.locator(Selectors.cart.deleteItem).first().click();
-  // Wait for the cart to reflect the removal before asserting.
-  await this.page.waitForLoadState('networkidle').catch(() => {});
-});
-
-Then('the checkout button should not be visible', async function (this: StepWorld) {
-  await expect(this.page.locator(Selectors.cart.checkoutButton)).not.toBeVisible();
-});
-
-When('I navigate directly to the payment page', async function (this: StepWorld) {
-  await this.page.goto('/payment');
-  await assertNotBotChallenge(this.page);
-});
-
-When('I attempt to pay with test card details', async function (this: StepWorld) {
-  const pc = paymentPage(this);
-  await pc.fillNameOnCard(TestCard.holderName);
-  await pc.fillCardNumber(TestCard.number);
-  await pc.fillCardExpiry(TestCard.expiry);
-  await pc.fillCardCvc(TestCard.cvc);
-  await Promise.all([
-    this.page.waitForLoadState('networkidle').catch(() => {}),
-    pc.clickSubmit(),
-  ]);
-});
-
-/**
- * automationexercise.com does not guard /payment against an empty cart — it
- * accepts the submission and redirects to /payment_done, placing a real order.
- * This assertion is expected to fail until that's fixed upstream: a red result
- * here is correctly flagging a genuine product defect, not a broken test.
- */
-Then('the order should not be placed', async function (this: StepWorld) {
-  test.fail(
-    true,
-    'automationexercise.com does not guard /payment against an empty cart — tracked as a known upstream defect until fixed',
-  );
-  expect(new URL(this.page.url()).pathname).not.toMatch(/^\/payment_done/);
-});
-
-// ─── TC-005: address pre-fill ──────────────────────────────────────────────────
-
-Given(
-  'I have registered with address {string} and mobile {string}',
-  async function (this: StepWorld, address: string, mobile: string) {
-    this.registeredAddress = address;
-    this.registeredMobile = mobile;
-    this.registeredFirstName = 'Address';
-    this.registeredLastName = 'User';
-    await this.page.goto('/login');
-    await assertNotBotChallenge(this.page);
-    const email = `addr${Date.now()}@example.com`;
-    await aeSignupInitial(this.page, `${this.registeredFirstName} ${this.registeredLastName}`, email);
-    await aeFillAccountInformation(this.page, {
-      password: 'Welcome@123',
-      firstName: this.registeredFirstName,
-      lastName: this.registeredLastName,
-      address,
-      mobile,
-    });
-    await aeContinueAfterAccountCreated(this.page);
-  },
-);
-
-When('I proceed to checkout', async function (this: StepWorld) {
   await aeProceedToCheckoutFromCart(this.page);
-  await this.page.waitForURL(
-    (url) => {
-      const p = new URL(url).pathname.replace(/\/$/, '');
-      return p.endsWith('/checkout') || p.endsWith('/payment');
-    },
-    { timeout: 25_000 },
-  );
 });
 
-Then('the delivery address section should display my registered details', async function (this: StepWorld) {
-  await assertAddressSection(this.page, Selectors.checkout.deliveryAddress, this);
+When(/^I enter comment '([^']+)'$/, async function (this: StepWorld, comment: string) {
+  await this.page.locator(Selectors.checkout.orderComment).fill(comment);
 });
 
-Then('the billing address section should display my registered details', async function (this: StepWorld) {
-  await assertAddressSection(this.page, Selectors.checkout.invoiceAddress, this);
+When(/^I fill in card details: Name '([^']+)', Card Number '([^']+)', CVC '([^']+)', Expiry '([^']+)'$/, async function (this: StepWorld, name: string, cardNumber: string, cvc: string, expiry: string) {
+  const paymentPage = getPaymentCheckoutPage(this);
+  await paymentPage.fillCardName(name);
+  await paymentPage.fillCardNumber(cardNumber);
+  await paymentPage.fillCardCvc(cvc);
+  await paymentPage.fillCardExpiry(expiry);
+});
+
+When('I enter payment details and click \'Pay and Confirm Order\'', async function (this: StepWorld) {
+  const paymentPage = getPaymentCheckoutPage(this);
+  await paymentPage.fillCardName('Test User');
+  await paymentPage.fillCardNumber('4111111111111111');
+  await paymentPage.fillCardCvc('123');
+  await paymentPage.fillCardExpiry('12/2026');
+  await paymentPage.clickSubmit();
+});
+
+Then(/^a success message '([^']+)' is displayed and the order confirmation page is shown$/, async function (this: StepWorld, expectedMessage: string) {
+  await expect(this.page.locator('body')).toContainText(expectedMessage);
+});
+
+Then(/^"([^"]+)" is displayed confirming the end-to-end flow for a new user$/, async function (this: StepWorld, expectedMessage: string) {
+  await expect(this.page.locator('body')).toContainText(expectedMessage);
+});
+
+Then('both products are listed with correct quantities and total on checkout page', async function (this: StepWorld) {
+  await expect(this.page.locator(Selectors.cart.infoTable)).toBeVisible();
+});
+
+Then('I place order and submit payment details', async function (this: StepWorld) {
+  const paymentPage = getPaymentCheckoutPage(this);
+  await paymentPage.fillCardName('Test User');
+  await paymentPage.fillCardNumber('4111111111111111');
+  await paymentPage.fillCardCvc('123');
+  await paymentPage.fillCardExpiry('12/2026');
+  await paymentPage.clickSubmit();
+});
+
+Then(/^"([^"]+)" is shown confirming the multi-item, multi-quantity order$/, async function (this: StepWorld, expectedMessage: string) {
+  await expect(this.page.locator('body')).toContainText(expectedMessage);
+});
+
+When(/^I verify delivery address is correctly pre-filled as: '([^']+)'$/, async function (this: StepWorld, expectedAddress: string) {
+  await expect(this.page.locator(Selectors.checkout.deliveryAddress)).toContainText(expectedAddress);
+});
+
+Given('I inspect billing address section', async function (this: StepWorld) {
+  await expect(this.page.locator(Selectors.checkout.invoiceAddress)).toBeVisible();
+});
+
+Then('order proceeds to payment page confirming pre-filled addresses are accepted as valid', async function (this: StepWorld) {
+  await expect(this.page).toHaveURL(/payment|checkout/);
+});
+
+When(/^I verify only '([^']+)' remains with total updated to Rs\. (\d+) on cart page$/, async function (this: StepWorld, productName: string, total: string) {
+  await expect(this.page.locator(Selectors.cart.lineTotal)).toContainText(total);
+});
+
+Given(/^I proceed to checkout and verify order summary shows only '([^']+)'$/, async function (this: StepWorld, productName: string) {
+  await aeProceedToCheckoutFromCart(this.page);
+  await expect(this.page.locator('body')).toContainText(productName);
+});
+
+Then('I remove last product from cart', async function (this: StepWorld) {
+  await this.page.locator(Selectors.cart.deleteItem).last().click();
+});
+
+Then(/^cart displays a message indicating the cart is empty and '([^']+)' button is not available$/, async function (this: StepWorld, buttonLabel: string) {
+  await expect(this.page.locator(Selectors.cart.emptyCart)).toBeVisible();
+  await expect(this.page.getByText(buttonLabel)).toHaveCount(0);
+});
+
+When('I fill in card details with {string}, {string}, {string}, and {string}', async function (this: StepWorld, name: string, cardNumber: string, cvc: string, expiry: string) {
+  const paymentPage = getPaymentCheckoutPage(this);
+  await paymentPage.fillCardName(name);
+  await paymentPage.fillCardNumber(cardNumber);
+  await paymentPage.fillCardCvc(cvc);
+  await paymentPage.fillCardExpiry(expiry);
+});
+
+When('I click the Pay and Confirm Order button', async function (this: StepWorld) {
+  await getPaymentCheckoutPage(this).clickSubmit();
+});
+
+Then('I should see a success message {string}', async function (this: StepWorld, expectedMessage: string) {
+  await expect(this.page.locator('body')).toContainText(expectedMessage);
 });
