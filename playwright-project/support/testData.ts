@@ -11,4 +11,16 @@ export const TestCard = {
   cvc: '123',
 } as const;
 
+export const RegisteredCustomerData = {
+  firstName: 'Biresh',
+  lastName: 'Panda',
+  fullName: 'Biresh Panda',
+  address: '1234 Main St',
+  city: 'Carrollton',
+  state: 'Texas',
+  zip: '75010',
+  country: 'United States',
+  fullAddress: 'Mr. Biresh Panda, 1234 Main St, Carrollton, Texas 75010, United States',
+} as const;
+
 export const DefaultDeliveryComment = 'Standard delivery please.';

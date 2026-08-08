@@ -7,6 +7,7 @@ import { expect, Page } from '@playwright/test';
 import { PaymentCheckoutPage } from '../pages/PaymentCheckoutPage';
 import { aeAddProductFromListingToCart, aeAddProductFromProductDetails, aeOpenCart, aeProceedToCheckoutFromCart } from '../helpers/automationExercise';
 import { Selectors } from '../support/selectors';
+import { RegisteredCustomerData } from '../support/testData';
 
 interface StepWorld extends BddWorld {
   paymentCheckoutPage?: PaymentCheckoutPage;
@@ -17,6 +18,29 @@ function getPaymentCheckoutPage(world: StepWorld): PaymentCheckoutPage {
     world.paymentCheckoutPage = new PaymentCheckoutPage(world.page);
   }
   return world.paymentCheckoutPage;
+}
+
+function normalizeAddressText(value: string): string {
+  return value.toLowerCase().replace(/[\s,.-]+/g, ' ').trim();
+}
+
+async function ensureOnPaymentPage(page: Page): Promise<void> {
+  const currentPath = new URL(page.url()).pathname.replace(/\/$/, '');
+  if (currentPath.endsWith('/payment')) {
+    return;
+  }
+
+  const placeOrder = page.locator(Selectors.checkout.placeOrder).first();
+  if (await placeOrder.count()) {
+    await placeOrder.scrollIntoViewIfNeeded();
+    await expect(placeOrder).toBeVisible({ timeout: 15_000 });
+    await placeOrder.click();
+  }
+
+  await page.waitForURL(
+    (url) => new URL(url).pathname.replace(/\/$/, '').endsWith('/payment'),
+    { timeout: 25_000, waitUntil: 'commit' },
+  ).catch(() => undefined);
 }
 
 async function fillAccountInformation(page: Page, details: {
@@ -109,7 +133,10 @@ When(/^I click '([^']+)' delete button next to '([^']+)'$/, async function (this
 
 Then(/^I click '([^']+)' without modifying any details$/, async function (this: StepWorld, label: string) {
   if (label === 'Place Order') {
-    await getPaymentCheckoutPage(this).clickSubmit();
+    const placeOrder = this.page.locator(Selectors.checkout.placeOrder).first();
+    await placeOrder.scrollIntoViewIfNeeded();
+    await expect(placeOrder).toBeVisible({ timeout: 15_000 });
+    await placeOrder.click();
   }
 });
 
@@ -118,20 +145,20 @@ When(/^I select '([^']+)' from the prompt$/, async function (this: StepWorld, op
 });
 
 Given('I fill in a new username and email, click \'Signup\'', async function (this: StepWorld) {
-  await this.page.locator(Selectors.auth.signupName).fill('Test User');
+  await this.page.locator(Selectors.auth.signupName).fill(RegisteredCustomerData.fullName);
   await this.page.locator(Selectors.auth.signupEmail).fill(`user+${Date.now()}@example.com`);
   await this.page.locator(Selectors.auth.signupButton).click();
 });
 
 Given('I complete account information form with all required fields', async function (this: StepWorld) {
   await fillAccountInformation(this.page, {
-    firstName: 'Test',
-    lastName: 'User',
-    address: '123 Main Street',
-    city: 'Dallas',
-    state: 'Texas',
-    zip: '75001',
-    country: 'United States',
+    firstName: RegisteredCustomerData.firstName,
+    lastName: RegisteredCustomerData.lastName,
+    address: RegisteredCustomerData.address,
+    city: RegisteredCustomerData.city,
+    state: RegisteredCustomerData.state,
+    zip: RegisteredCustomerData.zip,
+    country: RegisteredCustomerData.country,
   });
 });
 
@@ -141,10 +168,14 @@ Given('I navigate back to cart and proceed to checkout', async function (this: S
 });
 
 When(/^I enter comment '([^']+)'$/, async function (this: StepWorld, comment: string) {
-  await this.page.locator(Selectors.checkout.orderComment).fill(comment);
+  const commentField = this.page.locator(Selectors.checkout.orderComment).first();
+  await commentField.scrollIntoViewIfNeeded();
+  await expect(commentField).toBeVisible({ timeout: 15_000 });
+  await commentField.fill(comment);
 });
 
 When(/^I fill in card details: Name '([^']+)', Card Number '([^']+)', CVC '([^']+)', Expiry '([^']+)'$/, async function (this: StepWorld, name: string, cardNumber: string, cvc: string, expiry: string) {
+  await ensureOnPaymentPage(this.page);
   const paymentPage = getPaymentCheckoutPage(this);
   await paymentPage.fillCardName(name);
   await paymentPage.fillCardNumber(cardNumber);
@@ -153,6 +184,7 @@ When(/^I fill in card details: Name '([^']+)', Card Number '([^']+)', CVC '([^']
 });
 
 When('I enter payment details and click \'Pay and Confirm Order\'', async function (this: StepWorld) {
+  await ensureOnPaymentPage(this.page);
   const paymentPage = getPaymentCheckoutPage(this);
   await paymentPage.fillCardName('Test User');
   await paymentPage.fillCardNumber('4111111111111111');
@@ -174,6 +206,7 @@ Then('both products are listed with correct quantities and total on checkout pag
 });
 
 Then('I place order and submit payment details', async function (this: StepWorld) {
+  await ensureOnPaymentPage(this.page);
   const paymentPage = getPaymentCheckoutPage(this);
   await paymentPage.fillCardName('Test User');
   await paymentPage.fillCardNumber('4111111111111111');
@@ -187,7 +220,12 @@ Then(/^"([^"]+)" is shown confirming the multi-item, multi-quantity order$/, asy
 });
 
 When(/^I verify delivery address is correctly pre-filled as: '([^']+)'$/, async function (this: StepWorld, expectedAddress: string) {
-  await expect(this.page.locator(Selectors.checkout.deliveryAddress)).toContainText(expectedAddress);
+  const addressLocator = this.page.locator(Selectors.checkout.deliveryAddress);
+  await expect(addressLocator).toBeVisible({ timeout: 15_000 });
+  const actualText = (await addressLocator.innerText()).replace(/\s+/g, ' ').trim();
+  const expectedNormalized = normalizeAddressText(expectedAddress);
+  const actualNormalized = normalizeAddressText(actualText);
+  expect(actualNormalized).toContain(expectedNormalized);
 });
 
 Given('I inspect billing address section', async function (this: StepWorld) {

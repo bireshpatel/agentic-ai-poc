@@ -34,29 +34,37 @@ export class PaymentCheckoutPage {
     await this.page.goto('/payment');
   }
 
+  private async fillField(locator: Locator, value: string) {
+    await locator.scrollIntoViewIfNeeded();
+    await locator.waitFor({ state: 'visible', timeout: 15_000 });
+    await locator.fill(value);
+  }
+
   async fillCardName(value: string) {
-    await this.cardName.fill(value);
+    await this.fillField(this.cardName, value);
   }
 
   async fillCardNumber(value: string) {
-    await this.cardNumber.fill(value);
+    await this.fillField(this.cardNumber, value);
   }
 
   async fillCardExpiry(value: string) {
     const [month, year] = value.split('/');
     if (month) {
-      await this.page.locator(Selectors.payment.expiryMonth).fill(month);
+      await this.fillField(this.page.locator(Selectors.payment.expiryMonth), month);
     }
     if (year) {
-      await this.page.locator(Selectors.payment.expiryYear).fill(year);
+      await this.fillField(this.page.locator(Selectors.payment.expiryYear), year);
     }
   }
 
   async fillCardCvc(value: string) {
-    await this.cardCvc.fill(value);
+    await this.fillField(this.cardCvc, value);
   }
 
   async clickSubmit() {
+    await this.submitButton.scrollIntoViewIfNeeded();
+    await expect(this.submitButton).toBeEnabled({ timeout: 10_000 });
     await this.submitButton.click();
   }
 

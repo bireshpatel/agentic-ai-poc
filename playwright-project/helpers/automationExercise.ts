@@ -47,8 +47,12 @@ export async function aeAddProductFromListingToCart(page: Page, productName: str
   await page.goto('/products');
   await page.waitForLoadState('domcontentloaded');
   await assertNotBotChallenge(page);
-  await page.locator(Selectors.addToCartById(id)).first().click();
-  await page.locator(Selectors.modal.cartModal).getByRole('link', { name: 'View Cart' }).click();
+  const addButton = page.locator(Selectors.addToCartById(id)).first();
+  await expect(addButton).toBeVisible({ timeout: 20_000 });
+  await addButton.click();
+  const viewCartLink = page.locator(Selectors.modal.cartModal).getByRole('link', { name: /view cart/i }).first();
+  await expect(viewCartLink).toBeVisible({ timeout: 15_000 });
+  await viewCartLink.click();
   await page.waitForURL((url) => new URL(url).pathname.replace(/\/$/, '').endsWith('/view_cart'));
 }
 
@@ -58,7 +62,9 @@ export async function aeOpenCart(page: Page): Promise<void> {
 }
 
 export async function aeProceedToCheckoutFromCart(page: Page): Promise<void> {
-  await page.locator(Selectors.cart.checkoutButton).click();
+  const checkoutLink = page.locator(Selectors.cart.checkoutButton).first();
+  await expect(checkoutLink).toBeVisible({ timeout: 15_000 });
+  await checkoutLink.click();
 }
 
 /** Cart → /checkout (fill comment + place-order) → /payment. Handles sites that skip /checkout. */

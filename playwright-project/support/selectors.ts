@@ -35,7 +35,7 @@ export const Selectors = {
   },
 
   cart: {
-    checkoutButton: 'a.btn.btn-default.check_out',
+    checkoutButton: 'a.btn.btn-default.check_out, a.check_out',
     deleteItem: 'a.cart_quantity_delete',
     emptyCart: '#empty_cart',
     infoTable: '#cart_info_table',
@@ -46,8 +46,8 @@ export const Selectors = {
   checkout: {
     deliveryAddress: '#address_delivery',
     invoiceAddress: '#address_invoice',
-    orderComment: 'textarea[name="message"]',
-    placeOrder: 'a.check_out[href="/payment"]',
+    orderComment: 'textarea[name="message"], textarea',
+    placeOrder: 'a.check_out[href="/payment"], a[href="/payment"], button:has-text("Place Order")',
   },
 
   payment: {
