@@ -5,7 +5,7 @@
 import { BddWorld, Given, When, Then } from '../fixtures/base.fixture';
 import { expect, Page } from '@playwright/test';
 import { PaymentCheckoutPage } from '../pages/PaymentCheckoutPage';
-import { aeAddProductFromListingToCart, aeAddProductFromProductDetails, aeOpenCart, aeProceedToCheckoutFromCart } from '../helpers/automationExercise';
+import { aeAddProductFromListingToCart, aeAddProductFromProductDetails, aeLogin, aeOpenCart, aeProceedToCheckoutFromCart, aeProductId } from '../helpers/automationExercise';
 import { Selectors } from '../support/selectors';
 import { RegisteredCustomerData } from '../support/testData';
 
@@ -71,9 +71,27 @@ Given('I am on the Payment Checkout page', async function (this: StepWorld) {
   await getPaymentCheckoutPage(this).navigateTo();
 });
 
-Given(/^I am logged in as (.+) and navigate to Products page$/, async function (this: StepWorld) {
+function requireCredentials(gherkinEmail?: string): { email: string; password: string } {
+  const email = process.env.PW_TEST_EMAIL || gherkinEmail;
+  const password = process.env.PW_TEST_PASSWORD;
+  if (!email || !password) {
+    throw new Error(
+      'PW_TEST_EMAIL and PW_TEST_PASSWORD must be set in .env — never hardcode credentials in feature files',
+    );
+  }
+  return { email, password };
+}
+
+Given(/^I am logged in as (.+) and navigate to Products page$/, async function (this: StepWorld, gherkinEmail: string) {
+  const { email, password } = requireCredentials(gherkinEmail);
+  await aeLogin(this.page, email, password);
   await this.page.goto('/products');
   await expect(this.page).toHaveURL(/products/);
+});
+
+Given('I am logged in as a registered user', async function (this: StepWorld) {
+  const { email, password } = requireCredentials();
+  await aeLogin(this.page, email, password);
 });
 
 Given(/^I navigate to Products page and add '([^']+)' \(Rs\. (\d+)\) to cart$/, async function (this: StepWorld, productName: string) {
@@ -84,7 +102,7 @@ Given(/^I add '([^']+)' \(Rs\. (\d+)\) to cart$/, async function (this: StepWorl
   await aeAddProductFromListingToCart(this.page, productName);
 });
 
-Given(/^I add '([^']+)' \(Rs\. (\d+)\) and '([^']+)' \(Rs\. (\d+)\) to cart$/, async function (this: StepWorld, firstProduct: string, secondProduct: string) {
+Given(/^I add '([^']+)' \(Rs\. (\d+)\) and '([^']+)' \(Rs\. (\d+)\) to cart$/, async function (this: StepWorld, firstProduct: string, _firstPrice: string, secondProduct: string) {
   await aeAddProductFromListingToCart(this.page, firstProduct);
   await aeAddProductFromListingToCart(this.page, secondProduct);
 });
@@ -128,7 +146,9 @@ When(/^I click '([^']+)'$/, async function (this: StepWorld, label: string) {
 });
 
 When(/^I click '([^']+)' delete button next to '([^']+)'$/, async function (this: StepWorld, buttonLabel: string, productName: string) {
-  await this.page.locator(Selectors.cart.deleteItem).first().click();
+  const id = aeProductId(productName);
+  await this.page.locator(`a.cart_quantity_delete[data-product-id="${id}"]`).click();
+  await expect(this.page.locator(`tr#product-${id}`)).toHaveCount(0, { timeout: 10_000 });
 });
 
 Then(/^I click '([^']+)' without modifying any details$/, async function (this: StepWorld, label: string) {
@@ -194,15 +214,21 @@ When('I enter payment details and click \'Pay and Confirm Order\'', async functi
 });
 
 Then(/^a success message '([^']+)' is displayed and the order confirmation page is shown$/, async function (this: StepWorld, expectedMessage: string) {
-  await expect(this.page.locator('body')).toContainText(expectedMessage);
+  const heading = this.page.locator(Selectors.confirmation.orderPlacedHeading);
+  await expect(heading).toBeVisible({ timeout: 20_000 });
+  await expect(heading).toContainText(expectedMessage);
 });
 
 Then(/^"([^"]+)" is displayed confirming the end-to-end flow for a new user$/, async function (this: StepWorld, expectedMessage: string) {
-  await expect(this.page.locator('body')).toContainText(expectedMessage);
+  const heading = this.page.locator(Selectors.confirmation.orderPlacedHeading);
+  await expect(heading).toBeVisible({ timeout: 20_000 });
+  await expect(heading).toContainText(expectedMessage);
 });
 
 Then('both products are listed with correct quantities and total on checkout page', async function (this: StepWorld) {
-  await expect(this.page.locator(Selectors.cart.infoTable)).toBeVisible();
+  // The /checkout review table has no id (unlike /view_cart's #cart_info_table);
+  // both pages wrap it in .table-responsive.cart_info.
+  await expect(this.page.locator('.cart_info table').first()).toBeVisible({ timeout: 15_000 });
 });
 
 Then('I place order and submit payment details', async function (this: StepWorld) {
@@ -216,7 +242,9 @@ Then('I place order and submit payment details', async function (this: StepWorld
 });
 
 Then(/^"([^"]+)" is shown confirming the multi-item, multi-quantity order$/, async function (this: StepWorld, expectedMessage: string) {
-  await expect(this.page.locator('body')).toContainText(expectedMessage);
+  const heading = this.page.locator(Selectors.confirmation.orderPlacedHeading);
+  await expect(heading).toBeVisible({ timeout: 20_000 });
+  await expect(heading).toContainText(expectedMessage);
 });
 
 When(/^I verify delivery address is correctly pre-filled as: '([^']+)'$/, async function (this: StepWorld, expectedAddress: string) {
@@ -237,7 +265,9 @@ Then('order proceeds to payment page confirming pre-filled addresses are accepte
 });
 
 When(/^I verify only '([^']+)' remains with total updated to Rs\. (\d+) on cart page$/, async function (this: StepWorld, productName: string, total: string) {
-  await expect(this.page.locator(Selectors.cart.lineTotal)).toContainText(total);
+  const totals = this.page.locator(Selectors.cart.lineTotal);
+  await expect(totals).toHaveCount(1);
+  await expect(totals).toContainText(String(total));
 });
 
 Given(/^I proceed to checkout and verify order summary shows only '([^']+)'$/, async function (this: StepWorld, productName: string) {
@@ -246,12 +276,16 @@ Given(/^I proceed to checkout and verify order summary shows only '([^']+)'$/, a
 });
 
 Then('I remove last product from cart', async function (this: StepWorld) {
-  await this.page.locator(Selectors.cart.deleteItem).last().click();
+  await aeOpenCart(this.page);
+  const deleteButtons = this.page.locator(Selectors.cart.deleteItem);
+  await expect(deleteButtons.first()).toBeVisible({ timeout: 10_000 });
+  await deleteButtons.last().click();
 });
 
 Then(/^cart displays a message indicating the cart is empty and '([^']+)' button is not available$/, async function (this: StepWorld, buttonLabel: string) {
   await expect(this.page.locator(Selectors.cart.emptyCart)).toBeVisible();
-  await expect(this.page.getByText(buttonLabel)).toHaveCount(0);
+  // The checkout button may linger in the DOM but must not be visible/clickable on an empty cart.
+  await expect(this.page.locator(Selectors.cart.checkoutButton).first()).toBeHidden();
 });
 
 When('I fill in card details with {string}, {string}, {string}, and {string}', async function (this: StepWorld, name: string, cardNumber: string, cvc: string, expiry: string) {
