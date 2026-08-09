@@ -28,6 +28,14 @@ export default defineConfig({
     headless: isCI,
     actionTimeout: 30_000,
     navigationTimeout: 30_000,
+    launchOptions: {
+      args: [
+        '--no-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+        '--disable-features=IsolateOrigins,site-per-process',
+      ],
+    },
 
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',

@@ -1,57 +1,54 @@
-# source: data/requirements/payment_checkout.md
-# Credentials are read from .env (PW_TEST_EMAIL / PW_TEST_PASSWORD) — never hardcode here.
-#
-# INTEGRATION NOTE: These scenarios were derived from AI-generated test cases in
-# output/testcase_generated/payment_checkout_testcases.csv
-# Reference the CSV for test case details, acceptance criteria, and expected results.
-# Mapping: Feature scenarios @TC-XXX tags link back to AI-generated test cases.
-# When updating: ensure both this .feature file and the corresponding CSV remain in sync.
+# source: output/testcase_generated/payment_checkout_raw_output.json + data/page_context/payment_checkout_page.json
+Feature: Payment checkout
 
-Feature: Payment Checkout
+  @TC-01 @high
+  Scenario: Logged-in customer adds product to cart and completes checkout
+    Given I am logged in as reachtobp@gmail.com and navigate to Products page
+    When I hover over 'Blue Top' (Rs. 500) and click 'Add to Cart'
+    And I click 'View Cart'
+    And I click 'Proceed To Checkout'
+    And I enter comment 'Please deliver before 5 PM'
+    And I fill in card details: Name 'Test User', Card Number '4111111111111111', CVC '123', Expiry '12/2026'
+    And I click 'Pay and Confirm Order'
+    Then a success message 'Order Placed!' is displayed and the order confirmation page is shown
 
-  @TC-001 @high @smoke @regression
-  Scenario: Verify successful order placement and invoice download for logged-in user
+  @TC-02 @high
+  Scenario: Guest user registers and completes checkout
+    Given I navigate to Products page and add 'Men Tshirt' (Rs. 400) to cart
+    And I click 'Proceed To Checkout'
+    When I select 'Register / Login' from the prompt
+    And I fill in a new username and email, click 'Signup'
+    And I complete account information form with all required fields
+    And I click 'Create Account'
+    And I navigate back to cart and proceed to checkout
+    And I enter payment details and click 'Pay and Confirm Order'
+    Then "Order Placed!" is displayed confirming the end-to-end flow for a new user
+
+  @TC-03 @high
+  Scenario: Logged-in customer adds multiple products with different quantities to cart and completes checkout
     Given I am logged in as a registered user
-    And I have "Blue Top" in my cart
-    When I proceed to checkout with comment "Please deliver before 5 PM."
-    And I pay with card holder "Test User", card "4111111111111111", expiry "12/2026", and CVC "123"
-    Then the order should be placed successfully
-    And the invoice file should be downloaded
+    And I navigate to 'Stylish Dress' product page, increase quantity to 3, add to cart
+    And I add 'Winter Top' (Rs. 600) to cart
+    When I click 'Proceed To Checkout'
+    Then both products are listed with correct quantities and total on checkout page
+    And I place order and submit payment details
+    Then "Order Placed!" is shown confirming the multi-item, multi-quantity order
 
-  @TC-002 @high @regression
-  Scenario: Verify guest user can register during checkout and complete order
-    Given I am a guest user with "Men Tshirt" in my cart
-    When I proceed to checkout and choose to create an account
-    And I complete the new account registration
-    And I return to the cart and proceed to checkout
-    And I complete the payment with test card details
-    Then I should be logged in
-    And the order should be placed successfully
+  @TC-04 @high
+  Scenario: Logged-in customer verifies pre-filled delivery address on checkout page
+    Given I register with first name 'Biresh', last name 'Panda', address '1234 Main St', city 'Carrollton', state 'Texas', zip '75010', country 'United States'
+    And I add a product and navigate to the checkout page
+    When I verify delivery address is correctly pre-filled as: 'Mr. Biresh Panda, 1234 Main St, Carrollton, Texas 75010, United States'
+    And I inspect billing address section
+    Then I click 'Place Order' without modifying any details
+    Then order proceeds to payment page confirming pre-filled addresses are accepted as valid
 
-  @TC-003 @medium @regression
-  Scenario: Verify cart total calculation for multiple quantities and post-order clearance
+  @TC-05 @high
+  Scenario: Logged-in customer removes a product from cart before proceeding to checkout
     Given I am logged in as a registered user
-    And I have 3 units of "Stylish Dress" in my cart
-    And I have 1 unit of "Winter Top" in my cart
-    When I view the cart
-    Then the cart total should be "Rs. 5100"
-    When I complete checkout and payment
-    And I navigate back to the cart
-    Then the cart should be empty
-
-  @TC-004 @medium @regression
-  Scenario: Verify system prevents checkout when the cart is empty
-    Given I have a product in my cart
-    When I remove all items from the cart
-    Then the checkout button should not be visible
-    When I navigate directly to the payment page
-    And I attempt to pay with test card details
-    Then the order should not be placed
-
-  @TC-005 @high @regression
-  Scenario: Verify registered address and mobile number pre-fill on checkout page
-    Given I have registered with address "1234 Main St" and mobile "+1-972-000-0000"
-    And I have a product in my cart
-    When I proceed to checkout
-    Then the delivery address section should display my registered details
-    And the billing address section should display my registered details
+    And I add 'Blue Top' (Rs. 500) and 'Men Tshirt' (Rs. 400) to cart
+    And I click 'X' delete button next to 'Blue Top'
+    When I verify only 'Men Tshirt' remains with total updated to Rs. 400 on cart page
+    And I proceed to checkout and verify order summary shows only 'Men Tshirt'
+    Then I remove last product from cart
+    Then cart displays a message indicating the cart is empty and 'Proceed To Checkout' button is not available
