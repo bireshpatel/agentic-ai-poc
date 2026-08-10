@@ -109,7 +109,7 @@
 
     <!-- elbow connector: gate -> row 2 -->
     <path d="M955,372 L955,432 L170,432 L170,470" stroke="#aab2bd" stroke-width="1.4" fill="none" marker-end="url(#arrowInk)"/>
-    <text x="500" y="425" font-size="10.5" fill="#8992a0">approved, hand-written step defs added</text>
+    <text x="500" y="425" font-size="10.5" fill="#8992a0">approved, TODO selectors resolved</text>
 
     <!-- ===== Row 2: trusted / executable ===== -->
     <g>
